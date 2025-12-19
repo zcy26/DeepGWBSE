@@ -39,7 +39,7 @@ This package provides deep learning models for DFT-GW-BSE calculations from crys
 
 ```bash
 cd DeepGWBSE
-[curl -LsSf https://astral.sh/uv/install.sh | sh] # if you don't have uv installed
+[Option] curl -LsSf https://astral.sh/uv/install.sh | sh  # if you don't have uv installed
 uv sync
 ```
 #### Option 2: Using `pip` (Package installation)
@@ -180,4 +180,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Acknowledgements
 We would like to acknowledge the following open-source projects that have made this work possible:
-[Quantum ESPRESSO](https://www.quantum-espresso.org/), [BerkeleyGW](https://berkeleygw.org/), [SIESTA](https://docs.siesta-project.org/projects/siesta/en/stable/index.html), [DeepH-E3](https://github.com/Xiaoxun-Gong/DeepH-E3), [HPRO](https://github.com/Xiaoxun-Gong/HPRO), bgwpy
+[Quantum ESPRESSO](https://www.quantum-espresso.org/), [BerkeleyGW](https://berkeleygw.org/), [BGWPy](https://github.com/BerkeleyGW/BGWpy)
