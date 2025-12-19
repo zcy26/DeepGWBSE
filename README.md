@@ -39,6 +39,7 @@ This package provides deep learning models for DFT-GW-BSE calculations from crys
 
 ```bash
 cd DeepGWBSE
+# if you haven't installed uv, install it by `curl -LsSf https://astral.sh/uv/install.sh | sh
 uv sync
 ```
 #### Option 2: Using `pip` (Package installation)
