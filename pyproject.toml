@@ -1,0 +1,92 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "deep-gwbse"
+version = "0.1.0"
+description = "An end-to-end deep learning pipeline for DFT-GW-BSE calculations"
+readme = "README.md"
+requires-python = ">=3.9,<3.12"
+license = { text = "MIT" }
+
+authors = [
+    { name = "Bowen Hou", email = "bowen.hou@yale.edu" },
+]
+
+maintainers = [
+    { name = "Bowen Hou", email = "bowen.hou@yale.edu" },
+]
+
+keywords = [
+    "dft",
+    "gw",
+    "bse",
+    "deep-learning",
+    "materials-science",
+    "quantum-espresso",
+    "berkeleygw",
+]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Chemistry",
+]
+
+# ---------------------------------------------------------------------
+# Runtime dependencies (aligned with your conda env)
+# ---------------------------------------------------------------------
+dependencies = [
+    "numpy==1.26.4",
+    "pymatgen>=2024.8.9",
+    "ase==3.23.0",
+    "torch==2.6.0",
+    "torchvision",
+    "h5py",
+    "e2cnn",
+    "pathos",
+    "tensorboard",
+    "scikit-learn",
+]
+
+# ---------------------------------------------------------------------
+# Optional dependencies
+# ---------------------------------------------------------------------
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=22.0.0",
+    "flake8>=4.0.0",
+]
+
+# ---------------------------------------------------------------------
+# CLI entry points
+# ---------------------------------------------------------------------
+[project.scripts]
+deep-gwbse-flows = "deep_gwbse.flows:main"
+deep-gwbse-flows-aug = "deep_gwbse.flows_augmentation:main"
+
+# ---------------------------------------------------------------------
+# Packaging
+# ---------------------------------------------------------------------
+[tool.setuptools]
+packages = { find = {} }
+
+[tool.setuptools.package-data]
+"deep_gwbse" = [
+    "config/*.json",
+    "from_oncvpsp/*",
+    "*.md",
+]
+
+# ---------------------------------------------------------------------
+# Formatting
+# ---------------------------------------------------------------------
+[tool.black]
+line-length = 100
+target-version = ["py39"]

@@ -1,0 +1,36 @@
+
+#======================================================================
+# CRYSTAL DATA
+#----------------------------------------------------------------------
+data_VESTA_phase_1
+
+_chemical_name_common                  ''
+_cell_length_a                         6.548771
+_cell_length_b                         4.137595
+_cell_length_c                         15.000000
+_cell_angle_alpha                      90.000000
+_cell_angle_beta                       90.000000
+_cell_angle_gamma                      81.263054
+_cell_volume                           401.726173
+_space_group_name_H-M_alt              'P 1'
+_space_group_IT_number                 1
+
+loop_
+_space_group_symop_operation_xyz
+   'x, y, z'
+
+loop_
+   _atom_site_label
+   _atom_site_occupancy
+   _atom_site_fract_x
+   _atom_site_fract_y
+   _atom_site_fract_z
+   _atom_site_adp_type
+   _atom_site_B_iso_or_equiv
+   _atom_site_type_symbol
+   Cr1         1.0     0.749999     0.749977     0.066666    Biso  1.000000 Cr
+   Cr2         1.0     0.250001     0.250023     0.000001    Biso  1.000000 Cr
+   Br1         1.0     0.437759     0.815075     0.060998    Biso  1.000000 Br
+   Br2         1.0     0.937778     0.315036     0.060998    Biso  1.000000 Br
+   Br3         1.0     0.062222     0.684965     0.005669    Biso  1.000000 Br
+   Br4         1.0     0.562241     0.184925     0.005669    Biso  1.000000 Br
