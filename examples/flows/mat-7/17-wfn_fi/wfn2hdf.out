@@ -1,0 +1,12 @@
+srun: warning: can't run 1 processes on 4 nodes, setting nnodes to 1
+ Reading header and gvectors from wfn.cplx
+ Writing header and gvectors to wfn.h5
+ Reading/writing wavefunctions from wfn.cplx to wfn.h5
+
+ Started conversion of wavefunctions with 2 k-points(s) at 18:01:37.
+ [ 18:01:37 |   0% ] k-points 1 / 2.
+ [ 18:01:37 |  50% ] k-points 2 / 2.
+ Finished conversion of wavefunctions at 18:01:37.
+ Elapsed time: 0 s.
+
+ Conversion from binary to HDF5 file complete!

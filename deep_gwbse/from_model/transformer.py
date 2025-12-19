@@ -238,8 +238,7 @@ class MBformer(nn.Module):
                  d_output: int = 1, d_model: int = 576, nhead: int = 2, 
                  dim_feedforward: int = 2048, dropout: float = 0.1, activation: str = "relu", layer_norm_eps: float = 1e-5, 
                  norm_first: bool = False, bias: bool = True,  max_band: int = 30, kpt_dim: int = 2, 
-                 base_kpt: int = 10000, base_energy: int = 10000,
-                 ):
+                 base_kpt: int = 10000, base_energy: int = 10000, **kwargs):
         """
         d_input_src(tgt): int, the dimension of the input source(target) data
         BasisAssembly_src(tgt): nn.Module, the basis assembly module for source(target) data

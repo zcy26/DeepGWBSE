@@ -302,7 +302,8 @@ class bse_training_manager_for_deepgwbse_paper:
         self.trainer = BSETransformerTrainer(self.model, self.loss, self.optimizer,
                                             model_name=model_name, use_Enc_Dec=self.use_Enc_Dec,
                                             task=self.task,
-                                            additional_metrics=self.additional_metrics)
+                                            additional_metrics=self.additional_metrics,
+                                            save_path=kwargs.get('save_path', None))
         self.trainer.load_model(load_best=True)
 
     def load_data(self, dataset_dir:str, dataset_fname:str,  dataset_latent_fname_suffix:str,
@@ -334,7 +335,7 @@ class bse_training_manager_for_deepgwbse_paper:
         self.trainer.load_model(True)
         self.trainer.train(num_epoches, self.dataloader_train, self.dataloader_val, continued=continued)
 
-    def evaluate_dataset(self, dataloader=None):
+    def evaluate_dataset(self, dataloader=None, save_path:str=None):
         # TODO
         assert dataloader is not None, "dataloader is None, please load data first"
         loss = 0
@@ -369,9 +370,16 @@ class bse_training_manager_for_deepgwbse_paper:
 
         print('\nMAE:', loss/len(dataloader))
         print('R2:', r2/len(dataloader))
-        np.savetxt('data1.dat', eval_original)
-        np.savetxt('data2.dat', eval_pred)
-
+        if save_path is not None:
+            np.savetxt(os.path.join(save_path, 'data1_bse_original.dat'), eval_original)
+            np.savetxt(os.path.join(save_path, 'data2_bse_pred.dat'), eval_pred)
+            plt.scatter(eval_original, eval_pred)
+            plt.savefig(os.path.join(save_path, 'bse_original_vs_pred.png'))
+        else:
+            np.savetxt('data1_bse_original.dat', eval_original)
+            np.savetxt('data2_bse_pred.dat', eval_pred)
+            plt.scatter(eval_original, eval_pred)
+            plt.savefig('bse_original_vs_pred.png')
 
 
 if __name__ == "__main__":  

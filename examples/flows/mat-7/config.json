@@ -1,7 +1,7 @@
 {
-    "dirname": "./flows/mat-5",
-    "stru_file": "../examples/fp-input/mat-5/stru.cif",
-    "prefix": "mat-5",
+    "dirname": "./flows/mat-7",
+    "stru_file": "../examples/fp-input/mat-7/stru.cif",
+    "prefix": "mat-7",
     "0_PATH": "PATH settings (COPY THIS FILE to LOCAL, DONT MODIFY)",
     "Siesta": "/global/homes/b/bwhou/anaconda3/envs/siesta/bin/siesta",
     "hpro": "/pscratch/sd/b/bwhou/12-deepGWBSE/Deep-GWBSE/HPRO/src/calc.py",

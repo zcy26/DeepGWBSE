@@ -1,43 +1,34 @@
 # Deep-GWBSE
 
-DeepGWBSE is an end-to-end deep learning pipeline designed for DFT-GW-BSE calculations.
+DeepGWBSE is an end-to-end **first-principles + deep learning pipeline** designed for DFT-GW-BSE many-body effects calculations.
 
 Author: Bowen Hou (bowen.hou@yale.edu)
 
-Contributors: Xian Xu (xian.xu@yale.edu), Jinyuan Wu (jinyuan.wu@yale.edu)
+Contributors: Xian Xu (xian.xu@yale.edu), Chengyan Zhang (chengyan.zhang@yale.edu), Jinyuan Wu (jinyuan.wu@yale.edu)
 
 ## Outline
 - [Deep-GWBSE](#deep-gwbse)
   - [Features](#features)
-  - [Documentation](#documentation)
   - [Installation](#installation)
   - [Quick Start](#quick-start)
-  - [Scripts Usage](#scripts-usage)
+  - [Documentation](#documentation)
   - [License](#license)
   - [Acknowledgements](#acknowledgements)
 
 
 ## Features
 This package provides deep learning models for DFT-GW-BSE calculations from crystal structures, including the following:
-- Fully-automatic GW+BSE workflow
-  - Parabands + Pseudobands
-  - NNS
-- VAE+MBFormer: transformer-based model for many-body GW-BSE  
-  - model scheme:  
+- Fully-automatic DFT-GW+BSE workflow with fast convergence strategy:
+  - Parabands + Pseudobands ([AR Altman, et al., PRL, 2024](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.132.086401))
+  - NNS ([FH da Jornada et al., PRB, 2017](https://journals.aps.org/prb/abstract/10.1103/PhysRevB.95.035109))
+- VAE+MBFormer: transformer-based model for many-body GW-BSE    
     <p align="center">
       <img src="deep_gwbse/from_model/fig/01-model.png" width="100%">
     </p>
 
-## Documentation
-
-If you only want to use the workflow scripts to quickly setup GW-BSE calculations, you might skip this part.
-
-For developers and advanced users, please carefully read this [**Documentation**](./deep_gwbse/note.md) for more details.
-
-
 ## Installation
 
-### Prerequisites: First-principles Packages
+### Prerequisites: First-principles software packages
 - [Quantum ESPRESSO](https://www.quantum-espresso.org/) version 6.8
 - [BerkeleyGW](https://berkeleygw.org/documentation/tutorial/) version 3
 
@@ -59,93 +50,97 @@ pip install -e .
 
 ## Quick Start
 
-### 0. Setup Configuration Files
+### General Pipeline:
 
-First, set up your configuration files with paths to Quantum ESPRESSO, BerkeleyGW, and pseudopotentials:
-
-```bash
-# Copy example config files
-cp deep_gwbse/config/single_mat_config.json ./
-cp deep_gwbse/config/fpconfig.json ./
 ```
-
-Edit the configuration files (`DeepGWBSE/deep_gwbse/config/`) to set:
-- `"QE_path"`: Path to Quantum ESPRESSO installation
-- `"BGW_path"`: Path to BerkeleyGW installation  
-- `"pseudo_dir_source"`: Path to pseudopotential directory (can use `./deep_gwbse/from_oncvpsp` for built-in pseudos)
-
-## Scripts Usage
+xxx.cif(s) --(flows.py)--> flows/ --(mbformer_data_tools)--> dataset.h5 --(vae, gw, bse trainer)--> model
+```
 
 ### DFT-GW-BSE Workflow Scripts
 
-#### 1. Multiple Materials Workflow (`flows.py`)
 
-Create workflows for multiple materials from a directory:
+Create DFT-GW-BSE workflows for multiple materials from a directory:
 
 ```bash
 python flows.py [ -c ./config/fpconfig.json]
 ```
 
-#### 2. Workflow Augmentation (`flows-augmentation.py`)
-
-Create augmentation workflows for GW or BSE calculations from existing completed flows:
-
-(Skip this step if you haven't finished BSE calculations in `./flows`)
+[Optional]: Create augmentation workflows by shifting k-grid (Skip this step if you haven't finished BSE calculations in `./flows`):
 
 ```bash
 python flows-augmentation.py -c ./config/augconfig.json
-cd <augmentation_directory>
-sbatch run_aug.sh
 ```
+
+We also provide a versatile script to control, collect, and monitor the DFT-GW-BSE calculations (see help by `-h`).
+
+```bash
+python collect_tool.py -h
+```
+
+**Note 1: Even if you are not interested in deepl learning part, the workflow scripts are still very useful to quickly setup GW-BSE calculations to save labor effort.**
+
+Note 2: When doing your own DFT-GW-BSE calculations, modify the configuration files (`DeepGWBSE/config/`) to customize your calculations.
 
 ### MBFormer Training Scripts
 
-Here, we provide multiple scripts showing how to train the MBFormer models for GW-BSE training and inference.
+The `mbformer_gwbse.py` script demonstrates how to use MBFormer models for GW-BSE training and inference. It consists of **four main parts**:
 
-#### 1. Data Preprocessing (`mbformer_data.py`)
+- **Data Preprocessing** – Prepare datasets from raw GW-BSE calculations.  
+- **VAE Training** – Train an Equivariant Variational Autoencoder (E2-VAE) to embed Kohn-Sham wavefunctions.  
+- **GW Training** – Train a transformer model for GW (G0W0) energy predictions.  
+- **BSE Training** – Train transformer models for BSE predictions, including eigenvalues, eigenvectors, and dipole moments.  
 
-Preprocess raw data from GW-BSE calculations to create training datasets:
+---
 
-```bash
-python mbformer_data.py
-```
+#### Part 1: Data Preprocessing
 
-This will create three HDF5 files:
-- `dataset_WFN.h5` - For training VAE
-- `dataset_GW.h5` - For training GW-MBFormer
-- `dataset_BSE.h5` - For training BSE-MBFormer
+Preprocess raw GW-BSE calculation data to generate training datasets.  
 
-**Note**: Modify the script to point to your data directory and adjust parameters as needed.
+This step creates **three HDF5 files**:
 
-#### 2. VAE Training (`mbformer_vae.py`)
+| Dataset | Purpose |
+|---------|---------|
+| `results/dataset/dataset_WFN.h5` | For training the VAE |
+| `results/dataset/dataset_GW.h5` | For training the GW-MBFormer |
+| `results/dataset/dataset_BSE.h5` | For training the BSE-MBFormer |
 
-Train an E2-VAE (Equivariant Variational Autoencoder) to embed KS wavefunctions:
+**Prerequisites:** Completed DFT-GW-BSE calculations should exist in `./examples/flows`.
 
-```bash
-python mbformer_vae.py
-```
+---
 
-The trained model will be saved as `./vae_e2_wfn.save`.
+#### Part 2: VAE Training
 
-#### 3. GW Training (`mbformer_gw.py`)
+Train an **Equivariant Variational Autoencoder (E2-VAE)** to embed Kohn-Sham wavefunctions.  
 
-Train a transformer model for GW (G0W0) energy predictions:
+**Requirements:**
 
-```bash
-python mbformer_gw.py
-```
+- WFN dataset: `./results/dataset/dataset_WFN.h5`  
 
-**Prerequisites**: Requires a trained VAE model (`./vae_e2_wfn.save`) and GW dataset (`./dataset/dataset_GW.h5`).
+**Output:**
 
-#### 4. BSE Training (`mbformer_bse.py`)
+- Trained model saved as: `./results/vae_e2_wfn.save`
 
-Train transformer models for BSE predictions (eigenvalues, eigenvectors, dipole moments):
+---
 
-```bash
-python mbformer_bse.py
-```
+#### Part 3: GW Training
 
-**Prerequisites**: Requires a trained VAE model (`./vae_e2_wfn.save`) and BSE dataset (`./dataset/dataset_BSE.h5`).
+Train a transformer model for **GW (G0W0) energy predictions**.  
+
+**Requirements:**
+
+- Trained VAE model: `./results/vae_e2_wfn.save`  
+- GW dataset: `./results/dataset/dataset_GW.h5`  
+
+---
+
+#### Part 4: BSE Training
+
+Train transformer models for **BSE predictions**, including eigenvalues, eigenvectors, and dipole moments.  
+
+**Requirements:**
+
+- Trained VAE model: `./results/vae_e2_wfn.save`  
+- BSE dataset: `./results/dataset/dataset_BSE.h5`  
 
 
 ## Project Structure
@@ -154,22 +149,27 @@ python mbformer_bse.py
 Deep-GWBSE/
 ├── deep_gwbse/          # Main package
 │   ├── __init__.py
+│   ├── README.md        # Documentation for developers
 │   ├── flow.py          # Single material workflow class
-│   ├── flows.py         # Multiple materials workflow
-│   ├── flows-augmentation.py  # Augmentation workflows
 │   ├── from_bgwpy/      # BGWpy integration
 │   ├── from_model/      # ML models and trainers
-│   ├── config/          # Configuration templates
-│   └── ...
+│   ├── from_oncvpsp/    # OnCVPSP pseudopotentials
+│   ├── from_c2db/        # QE integration
+│   └── fptask.py
 ├── flows.py             # Root-level script for multiple materials
 ├── flows-augmentation.py  # Root-level augmentation script
-├── mbformer_data.py     # Data preprocessing script
-├── mbformer_vae.py      # VAE training script
-├── mbformer_gw.py       # GW training script
-├── mbformer_bse.py      # BSE training script
+├── mbformer_gwbse.py     # GW-BSE MBFormer training script
 ├── pyproject.toml       # Package configuration
 └── README.md
 ```
+
+## Documentation
+
+If you only want to use the workflow scripts to quickly setup GW-BSE calculations, you might skip this part.
+
+For developers and advanced users, please carefully read this [**Documentation**](./deep_gwbse/README.md) for more details.
+
+
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

@@ -90,3 +90,8 @@ packages = { find = {} }
 [tool.black]
 line-length = 100
 target-version = ["py39"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+]
