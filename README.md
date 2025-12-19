@@ -4,13 +4,14 @@ DeepGWBSE is an end-to-end **first-principles + deep learning pipeline** designe
 
 Author: Bowen Hou (bowen.hou@yale.edu)
 
-Contributors: Xian Xu (xian.xu@yale.edu), Chengyan Zhang (chengyan.zhang@yale.edu), Jinyuan Wu (jinyuan.wu@yale.edu)
+Contributors: Xian Xu, Chengyan Zhang, Jinyuan Wu
 
 ## Outline
 - [Deep-GWBSE](#deep-gwbse)
   - [Features](#features)
   - [Installation](#installation)
   - [Quick Start](#quick-start)
+  - [Repo Structure](#repo-structure)
   - [Documentation](#documentation)
   - [License](#license)
   - [Acknowledgements](#acknowledgements)
@@ -50,13 +51,13 @@ pip install -e .
 
 ## Quick Start
 
-### General Pipeline:
+### 1. General Pipeline:
 
 ```
 xxx.cif(s) --(flows.py)--> flows/ --(mbformer_data_tools)--> dataset.h5 --(vae, gw, bse trainer)--> model
 ```
 
-### DFT-GW-BSE Workflow Scripts
+### 2. DFT-GW-BSE Workflow Scripts
 
 
 Create DFT-GW-BSE workflows for multiple materials from a directory:
@@ -77,11 +78,11 @@ We also provide a versatile script to control, collect, and monitor the DFT-GW-B
 python collect_tool.py -h
 ```
 
-**Note 1: Even if you are not interested in deepl learning part, the workflow scripts are still very useful to quickly setup GW-BSE calculations to save labor effort.**
+**Note 1**: Even if you are not interested in deepl learning part, the workflow scripts are still very useful to quickly setup GW-BSE calculations to save labor effort.
 
-Note 2: When doing your own DFT-GW-BSE calculations, modify the configuration files (`DeepGWBSE/config/`) to customize your calculations.
+**Note 2**: When doing your own DFT-GW-BSE calculations, modify the configuration files (`DeepGWBSE/config/`) to customize your calculations.
 
-### MBFormer Training Scripts
+### 3. MBFormer Training Scripts
 
 The `mbformer_gwbse.py` script demonstrates how to use MBFormer models for GW-BSE training and inference. It consists of **four main parts**:
 
@@ -143,7 +144,7 @@ Train transformer models for **BSE predictions**, including eigenvalues, eigenve
 - BSE dataset: `./results/dataset/dataset_BSE.h5`  
 
 
-## Project Structure
+## Repo Structure
 
 ```
 Deep-GWBSE/
