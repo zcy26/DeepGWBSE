@@ -94,6 +94,14 @@ The `mbformer_gwbse.py` script demonstrates how to use MBFormer models for GW-BS
 - **GW Training** – Train a transformer model for GW (G0W0) energy predictions.  
 - **BSE Training** – Train transformer models for BSE predictions, including eigenvalues, eigenvectors, and dipole moments.  
 
+Simply run the script to start the pipeline:
+
+```bash
+python mbformer_gwbse.py
+```
+
+it will generate the trained models, log and visualizations in `results/` directory.
+
 ---
 
 #### Part 1: Data Preprocessing
