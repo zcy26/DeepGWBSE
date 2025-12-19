@@ -1,6 +1,6 @@
 # Deep-GWBSE
 
-Deep-GWBSE is an end-to-end deep learning pipeline designed for DFT-GW-BSE calculations.
+DeepGWBSE is an end-to-end deep learning pipeline designed for DFT-GW-BSE calculations.
 
 Author: Bowen Hou (bowen.hou@yale.edu)
 
@@ -41,17 +41,20 @@ For developers and advanced users, please carefully read this [**Documentation**
 - [Quantum ESPRESSO](https://www.quantum-espresso.org/) version 6.8
 - [BerkeleyGW](https://berkeleygw.org/documentation/tutorial/) version 3
 
-### Deep-GWBSE Package Installation
+### Deep-GWBSE Package Dependency/Installation
 
-#### Option 1: Using `uv` (Recommended)
+#### Option 1: Using `uv` 
 
 ```bash
-# Clone the repository
-git clone https://github.com/bwhou1997/Deep-GWBSE.git
-cd Deep-GWBSE
-
-# Install using uv
+cd DeepGWBSE
 uv sync
+```
+#### Option 2: Using `pip` (Package installation)
+```bash
+cd DeepGWBSE
+conda create -n deep-gwbse python=3.9 -y
+conda activate deep-gwbse
+pip install -e .
 ```
 
 ## Quick Start
@@ -66,7 +69,7 @@ cp deep_gwbse/config/single_mat_config.json ./
 cp deep_gwbse/config/fpconfig.json ./
 ```
 
-Edit the configuration files to set:
+Edit the configuration files (`DeepGWBSE/deep_gwbse/config/`) to set:
 - `"QE_path"`: Path to Quantum ESPRESSO installation
 - `"BGW_path"`: Path to BerkeleyGW installation  
 - `"pseudo_dir_source"`: Path to pseudopotential directory (can use `./deep_gwbse/from_oncvpsp` for built-in pseudos)
@@ -80,22 +83,24 @@ Edit the configuration files to set:
 Create workflows for multiple materials from a directory:
 
 ```bash
-python flows.py -c fpconfig.json
-cd flows
-sbatch run.sh
+python flows.py [ -c ./config/fpconfig.json]
 ```
 
 #### 2. Workflow Augmentation (`flows-augmentation.py`)
 
 Create augmentation workflows for GW or BSE calculations from existing completed flows:
 
+(Skip this step if you haven't finished BSE calculations in `./flows`)
+
 ```bash
-python flows-augmentation.py -c augconfig.json
+python flows-augmentation.py -c ./config/augconfig.json
 cd <augmentation_directory>
 sbatch run_aug.sh
 ```
 
 ### MBFormer Training Scripts
+
+Here, we provide multiple scripts showing how to train the MBFormer models for GW-BSE training and inference.
 
 #### 1. Data Preprocessing (`mbformer_data.py`)
 
@@ -142,48 +147,6 @@ python mbformer_bse.py
 
 **Prerequisites**: Requires a trained VAE model (`./vae_e2_wfn.save`) and BSE dataset (`./dataset/dataset_BSE.h5`).
 
-## Detailed Workflow
-
-### Step 1: Run DFT-GW-BSE Calculations
-
-For a single material:
-```bash
-python flows.py -c single_mat_config.json
-```
-
-For multiple materials:
-```bash
-python flows.py -c fpconfig.json
-```
-
-### Step 2: Preprocess Data for Machine Learning
-
-After your calculations complete, preprocess the data:
-
-```bash
-python mbformer_data.py
-```
-
-Modify the script to point to your `flows` directory and adjust dataset parameters.
-
-### Step 3: Train MBFormer Models
-
-Train models in sequence:
-
-1. **VAE** (required for GW and BSE models):
-   ```bash
-   python mbformer_vae.py
-   ```
-
-2. **GW Model**:
-   ```bash
-   python mbformer_gw.py
-   ```
-
-3. **BSE Model**:
-   ```bash
-   python mbformer_bse.py
-   ```
 
 ## Project Structure
 

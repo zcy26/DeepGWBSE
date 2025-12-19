@@ -1,0 +1,7 @@
+#!/bin/bash
+
+
+MPIRUN='srun -n 512'
+
+srun -n 1 /global/homes/b/bwhou/anaconda3/envs/siesta/bin/siesta < mat-5.fdf &> siesta.out
+

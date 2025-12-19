@@ -1,14 +1,4 @@
 #!/usr/bin/env python
-"""
-MBFormer VAE training script.
-
-This script trains an E2-VAE (Equivariant Variational Autoencoder) to embed
-KS wavefunctions for use in MBFormer models.
-
-Usage:
-    python mbformer_vae.py
-"""
-
 from deep_gwbse.from_model.data import ManyBodyData
 from deep_gwbse.from_model.e2vaetrainer import WFNVAETrainer, wfn_collate_fn
 from deep_gwbse.from_model.e2vae import EquivariantVAE
@@ -20,15 +10,14 @@ import matplotlib.pyplot as plt
 
 
 if __name__ == "__main__":
-    config_model_path = "./vae_e2_wfn.save"
+    # Basic configuration
+    config_model_path = "./vae_e2_wfn.save" # (Optional) load from existing model
     num_epoches = 20
     beta = 0.2
     train_val_split = 0.8
 
     # Load dataset
-    # wfdata = ManyBodyData.from_existing_dataset('./dataset/1000_wfn_1/dataset_WFN_1000.h5')
     wfdata = ManyBodyData.from_existing_dataset('./dataset/dataset_WFN.h5')
-
     wfdata_train = wfdata[:int(len(wfdata)*train_val_split)]
     wfdata_val = wfdata[int(len(wfdata)*train_val_split):]
     dataloader_train = DataLoader(wfdata_train, batch_size=1, collate_fn=wfn_collate_fn)

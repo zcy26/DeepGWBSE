@@ -1,14 +1,4 @@
 #!/usr/bin/env python
-"""
-MBFormer BSE training script.
-
-This script trains transformer models for BSE (Bethe-Salpeter Equation) predictions
-including eigenvalues, eigenvectors, and dipole moments using pretrained VAE embeddings.
-
-Usage:
-    python mbformer_bse.py
-"""
-
 from deep_gwbse.from_model.data import ManyBodyData
 from deep_gwbse.from_model.bsetrainer import bse_training_manager_for_deepgwbse_paper, BSEPredictTask
 from deep_gwbse.from_model.trainer import Trainer
@@ -31,6 +21,10 @@ if __name__ == "__main__":
         'dataset_fname': 'dataset_BSE.h5',
         'dataset_latent_fname_suffix': '_latent_vae.h5',
     }
+
+    # IMPORTANT:
+    # BSE Training has three tasks: eigenvalues, eigenvectors, and dipole
+    # Please check `bse_training_manager_for_deepgwbse_paper` in `deep_gwbse.from_model.bsetrainer` for more details and an example of how to use it!!!
 
     """Training for BSE eigenvalues with pretrained VAE"""
     print("Training BSE eigenvalues model...")

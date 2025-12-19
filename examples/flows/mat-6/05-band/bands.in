@@ -1,0 +1,6 @@
+&bands
+  prefix = "mat-5",
+  outdir = "./",
+  filband = "bands.dat",
+  lsym = .false.,
+/

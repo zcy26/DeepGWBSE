@@ -32,9 +32,9 @@ CH-data-3-mat
 01-TBM-QPH/GW_Hamiltonian_matrix.png
 05-42-CHON-GW-DFT
 input
-flow
+# flow
 # fp-input
-*flow*
+# *flow*
 trash
 other
 test_data
@@ -79,3 +79,5 @@ src/from_model/data2.dat
 src/from_model/bsetrainer-copy.py
 
 *venv*
+
+*egg*

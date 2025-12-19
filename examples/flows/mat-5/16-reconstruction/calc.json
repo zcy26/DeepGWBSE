@@ -1,0 +1,10 @@
+{
+    "Warning": "you might modify fptask.py to change path if you change folder name of previous step",
+    "lcao_interface": "siesta",
+    "lcaodata_root": "../07-aobasis",
+    "hrdata_interface": "qe-bgw",
+    "vscdir": "../01-density/VSC",
+    "upfdir": "../pp",
+    "ecutwfn": 30,
+    "outdir": "./aohamiltonian"
+}

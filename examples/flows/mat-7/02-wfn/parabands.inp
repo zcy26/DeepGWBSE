@@ -1,0 +1,5 @@
+input_wfn_file wfn.cplx
+output_wfn_file wfn.h5
+vsc_file VSC
+vkb_file VKB
+number_bands 10000

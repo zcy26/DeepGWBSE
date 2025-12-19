@@ -1,0 +1,16 @@
+number_val_bands_coarse 4
+number_val_bands_fine 4
+number_cond_bands_coarse 5
+number_cond_bands_fine 5
+energy_resolution 0.1
+dont_check_norms
+cell_slab_truncation
+use_symmetries_coarse_grid
+use_symmetries_fine_grid
+use_symmetries_shifted_grid
+screening_semiconductor
+use_momentum
+gaussian_broadening
+eqp_co_corrections
+write_eigenvectors -1
+degeneracy_check_override

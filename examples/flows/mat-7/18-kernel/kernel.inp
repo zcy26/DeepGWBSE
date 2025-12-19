@@ -1,0 +1,7 @@
+number_val_bands 4
+number_cond_bands 5
+dont_check_norms
+cell_slab_truncation
+screening_semiconductor
+use_symmetries_coarse_grid
+screened_coulomb_cutoff 7.0

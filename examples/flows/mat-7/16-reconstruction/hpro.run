@@ -1,0 +1,7 @@
+#!/bin/bash
+
+
+MPIRUN='srun -n 512'
+
+srun -n 1 python /pscratch/sd/b/bwhou/12-deepGWBSE/Deep-GWBSE/HPRO/src/calc.py > hpro.out
+

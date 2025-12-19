@@ -1,0 +1,9 @@
+number_val_bands_coarse 1
+number_val_bands_fine 1
+number_cond_bands_coarse 1
+number_cond_bands_fine 1
+degeneracy_check_override
+no_symmetries_fine_grid
+no_symmetries_shifted_grid
+use_symmetries_coarse_grid
+use_momentum

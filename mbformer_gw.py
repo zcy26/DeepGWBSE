@@ -1,14 +1,4 @@
 #!/usr/bin/env python
-"""
-MBFormer GW training script.
-
-This script trains a transformer model for GW (G0W0) energy predictions
-using pretrained VAE embeddings.
-
-Usage:
-    python mbformer_gw.py
-"""
-
 from deep_gwbse.from_model.data import ManyBodyData
 from deep_gwbse.from_model.gwtrainer import GWTransformerTrainer, GWPredictTask, gw_collate_fn
 from deep_gwbse.from_model.transformer import MBformer
@@ -22,7 +12,8 @@ from torch.utils.data import DataLoader
 
 
 if __name__ == "__main__":
-    d_model = 48
+    # Basic configuration
+    d_model = 48 # (Optional) load from existing model
     num_epoches = 10
     train_val_split = 0.95
     dataset_dir = './dataset'
@@ -55,7 +46,6 @@ if __name__ == "__main__":
     # Initialize model
     enc2 = MBformer(d_input_src=d_model, d_input_tgt=d_model, d_model=d_model, 
                     activation="gelu", num_encoder_layers=2, num_decoder_layers=2)
-
     optimizer = torch.optim.Adam(enc2.parameters(), lr=1e-5)
     lr_scheduler = None
     loss = torch.nn.MSELoss()
@@ -78,6 +68,5 @@ if __name__ == "__main__":
     print("Training evaluation:")
     gw_trainer_sigma.evaluate_dataset(dataloader_train, file_name_pred="data_train_pred.dat", 
                                      file_name_original="data_train_orginal.dat")
-
     print('GW training completed!')
 

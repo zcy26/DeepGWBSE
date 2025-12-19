@@ -1,0 +1,43 @@
+SystemName	mat-5
+SystemLabel	mat-5
+
+DM.MixingWeight	1e-06
+MaxSCFIterations	300
+SCFMustConverge	True
+
+Spin	non-polarized
+XC.functional	GGA
+XC.authors	PBE
+
+MeshCutoff	320	eV
+PAO.EnergyShift	0.1	eV
+
+NumberOfSpecies	2
+NumberOfAtoms	2
+%block ChemicalSpecieslabel
+    1 7 N.1
+    2 5 B.2
+%endblock ChemicalSpecieslabel
+
+%block PAO.BasisSizes
+    N.1	DZP
+    B.2	DZP
+%endblock PAO.BasisSizes
+
+
+LatticeConstant	1.0 Ang
+%block LatticeVectors
+    2.504 0.0 0.0
+    -1.2519999999999993 2.1685276110762346 0.0
+    0.0 0.0 20.0
+%endblock LatticeVectors
+AtomicCoordinatesFormat	Ang
+%block AtomicCoordinatesAndAtomicSpecies
+    -1.2519999994616464e-06 1.44568579689336 10.0 1
+    1.2520012520000006 0.7228418141828745 10.0 2
+%endblock AtomicCoordinatesAndAtomicSpecies
+%block DM.InitSpin
+%endblock DM.InitSpin
+
+DM.UseSaveDM	True
+SaveRho	True

@@ -1,0 +1,6 @@
+epsilon_cutoff 25.0
+restart
+dont_check_norms
+cell_slab_truncation
+degeneracy_check_override
+
