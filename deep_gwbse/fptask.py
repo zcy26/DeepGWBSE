@@ -1,15 +1,15 @@
 from os.path import join as pjoin
 import ase.io
 from ase.calculators.siesta import Siesta
-from from_bgwpy.core import MPITask, IOTask
+from .from_bgwpy.core import MPITask, IOTask
 import os
-from from_bgwpy.QE import QeScfTask, QeWfnTask, Qe2BgwTask, QeBgwFlow
-from from_bgwpy.DFT import WfnBgwFlow
-from from_bgwpy.BGW import EpsilonTask, SigmaTask, IneqpTask
-from from_bgwpy.BGW.bgwtask import BGWTask
-from from_bgwpy.QE.pseudobands_str import pseudoband_py
-from from_bgwpy.BGW.kgrid   import KgridTask, get_kpt_grid
-from from_bgwpy.BGW.inputs  import EpsilonInput
+from .from_bgwpy.QE import QeScfTask, QeWfnTask, Qe2BgwTask, QeBgwFlow
+from .from_bgwpy.DFT import WfnBgwFlow
+from .from_bgwpy.BGW import EpsilonTask, SigmaTask, IneqpTask
+from .from_bgwpy.BGW.bgwtask import BGWTask
+from .from_bgwpy.QE.pseudobands_str import pseudoband_py
+from .from_bgwpy.BGW.kgrid   import KgridTask, get_kpt_grid
+from .from_bgwpy.BGW.inputs  import EpsilonInput
 import os
 import json
 import subprocess

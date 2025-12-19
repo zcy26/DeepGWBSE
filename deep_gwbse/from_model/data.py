@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader, TensorDataset
-from from_model.interface import wfn, eqp, AScvk
-from from_model.model_util import time_watch, memory_watch
+from .interface import wfn, eqp, AScvk
+from .model_util import time_watch, memory_watch
 from pathos.multiprocessing import ProcessingPool as Pool
 import os
 from tqdm import tqdm
@@ -12,7 +12,7 @@ import h5py as h5
 import logging
 import numpy as np
 import copy
-from utils import check_flows_status
+from ..utils import check_flows_status
 """
 Author:  Bowen Hou
 Contact: bowen.hou@yale.edu

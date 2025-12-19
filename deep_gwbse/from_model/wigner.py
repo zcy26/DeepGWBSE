@@ -9,7 +9,7 @@ import time
 from scipy.interpolate import LinearNDInterpolator
 import logging
 import plotly.graph_objects as go
-from from_model.model_util import time_watch
+from .model_util import time_watch
 au2ang = 0.52917721067
 class WignerXY:
     def __init__(self, lattice: np.ndarray, FFT_grid_shape: np.array, 

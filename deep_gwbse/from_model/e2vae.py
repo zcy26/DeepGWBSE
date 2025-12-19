@@ -7,7 +7,7 @@ import torch
 import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
-from from_model.model_util import print_model_size, capture_config
+from .model_util import print_model_size, capture_config
 import os
 from tqdm import tqdm
 

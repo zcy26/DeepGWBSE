@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 from torch.utils.data import Dataset, DataLoader, TensorDataset
-from from_model.data import ToyDataSet as d
+from .data import ToyDataSet as d
 import torch
 import torch.nn as nn
 import numpy as np

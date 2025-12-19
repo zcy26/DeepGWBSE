@@ -1,6 +1,6 @@
 #%%
 import math
-from from_model.trainer import Trainer
+from .trainer import Trainer
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -15,9 +15,9 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 import torchvision.transforms.functional as TF
 import matplotlib.pyplot as plt
-from from_model.e2vae import EquivariantVAE, vae_loss
+from .e2vae import EquivariantVAE, vae_loss
 from torch.utils.data import DataLoader
-from from_model.data import ManyBodyData
+from .data import ManyBodyData
 from sklearn.metrics import r2_score
 
 class WFNVAETrainer(Trainer):

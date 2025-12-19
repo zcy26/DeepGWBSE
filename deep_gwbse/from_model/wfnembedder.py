@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from from_model.data import ManyBodyData
+from .data import ManyBodyData
 import numpy as np
-from from_model.model_util import H5ls
+from .model_util import H5ls
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from pathos.multiprocessing import ProcessingPool as Pool
@@ -10,9 +10,9 @@ from tqdm import tqdm
 import os
 import torch
 from os.path import join as pjoin
-from from_model.e2vaetrainer import wfn_collate_fn, WFNVAETrainer
-from from_model.e2vae import EquivariantVAE
-from from_model.trainer import Trainer
+from .e2vaetrainer import wfn_collate_fn, WFNVAETrainer
+from .e2vae import EquivariantVAE
+from .trainer import Trainer
 
 # class ManyBodyData_WFN_Embedder_pretrained:
 #     """

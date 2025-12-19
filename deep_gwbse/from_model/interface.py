@@ -4,10 +4,10 @@ import h5py as h5
 import os
 import matplotlib.pyplot as plt
 from scipy.io import FortranFile
-from from_model.model_util import H5ls, time_watch, memory_watch, eV2Ry
+from .model_util import H5ls, time_watch, memory_watch, eV2Ry
 from tqdm import tqdm
 import logging
-import from_model.wigner as wigner
+from . import wigner
 from scipy.ndimage import zoom
 import time
 import matplotlib.pyplot as plt

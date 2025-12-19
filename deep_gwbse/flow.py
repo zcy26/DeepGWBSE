@@ -3,17 +3,17 @@
 from __future__ import print_function
 
 from os.path import join as pjoin
-from from_bgwpy.config import flavors
-from from_bgwpy.config import is_dft_flavor_espresso, check_dft_flavor
-from from_bgwpy.external import Structure
-from from_bgwpy.core import Workflow
-from from_bgwpy.BGW import EpsilonTask, SigmaTask, IneqpTask, KernelTask, AbsorptionTask
-from from_bgwpy.QE import QeScfTask, QeBgwFlow, Qe2BgwTask, QeWfnTask
-from from_bgwpy.DFT import WfnBgwFlow
+from .from_bgwpy.config import flavors
+from .from_bgwpy.config import is_dft_flavor_espresso, check_dft_flavor
+from .from_bgwpy.external import Structure
+from .from_bgwpy.core import Workflow
+from .from_bgwpy.BGW import EpsilonTask, SigmaTask, IneqpTask, KernelTask, AbsorptionTask
+from .from_bgwpy.QE import QeScfTask, QeBgwFlow, Qe2BgwTask, QeWfnTask
+from .from_bgwpy.DFT import WfnBgwFlow
 from ase import Atoms
 import ase.io
 import subprocess
-from fptask import AobasisTask, HPROTask, PseudoBandTask, QeBgwFlow_NNS, EpsilonTask_NNS, SigmaTask_NNS, nns_helper_epsilon, ParaBandTask, QeBgwFlow_band, IneqpTask_plot
+from .fptask import AobasisTask, HPROTask, PseudoBandTask, QeBgwFlow_NNS, EpsilonTask_NNS, SigmaTask_NNS, nns_helper_epsilon, ParaBandTask, QeBgwFlow_band, IneqpTask_plot
 # from config import fp_config
 import re
 import json
