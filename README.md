@@ -39,7 +39,7 @@ This package provides deep learning models for DFT-GW-BSE calculations from crys
 
 ```bash
 cd DeepGWBSE
-# if you haven't installed uv, install it by `curl -LsSf https://astral.sh/uv/install.sh | sh
+[curl -LsSf https://astral.sh/uv/install.sh | sh] # if you don't have uv installed
 uv sync
 ```
 #### Option 2: Using `pip` (Package installation)
@@ -64,6 +64,7 @@ xxx.cif(s) --(flows.py)--> flows/ --(mbformer_data_tools)--> dataset.h5 --(vae, 
 Create DFT-GW-BSE workflows for multiple materials from a directory:
 
 ```bash
+# Make sure BerkeleyGW/bin/kgrid.x is in your $PATH (we will integrate it into the package in the future)
 python flows.py [ -c ./config/fpconfig.json]
 ```
 
