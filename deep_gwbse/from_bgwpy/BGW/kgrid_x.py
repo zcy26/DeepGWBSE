@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+import warnings
 # TODO: implement python version of kgrid.x
 
 def write_espresso(filename):
@@ -9,6 +9,7 @@ def write_espresso(filename):
         f.write(f"--------------")
         f.write(f"To generate right k-points")
         f.write(f"please make sure <BerkeleyGW/bin/kgrid.x> is in your PATH!!!.")
+    print('Make sure <BerkeleyGW/bin/kgrid.x> in your PATH!!! (intergrated kgrid.x version will be coming soon!)')
 
 def write_log(filename):
     with open(filename, "w") as f:
