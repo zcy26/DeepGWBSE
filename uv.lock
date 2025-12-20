@@ -358,7 +358,6 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "ase" },
-    { name = "e2cnn" },
     { name = "h5py", version = "3.14.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "h5py", version = "3.15.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "numpy" },
@@ -368,9 +367,6 @@ dependencies = [
     { name = "scikit-learn", version = "1.6.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "scikit-learn", version = "1.7.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
     { name = "scikit-learn", version = "1.8.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
-    { name = "tensorboard" },
-    { name = "torch" },
-    { name = "torchvision" },
 ]
 
 [package.optional-dependencies]
@@ -381,18 +377,18 @@ dev = [
     { name = "pytest", version = "8.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "pytest", version = "9.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
 ]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pytest", version = "8.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "pytest", version = "9.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+ml = [
+    { name = "e2cnn" },
+    { name = "tensorboard" },
+    { name = "torch" },
+    { name = "torchvision" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "ase", specifier = "==3.23.0" },
     { name = "black", marker = "extra == 'dev'", specifier = ">=22.0.0" },
-    { name = "e2cnn" },
+    { name = "e2cnn", marker = "extra == 'ml'" },
     { name = "flake8", marker = "extra == 'dev'", specifier = ">=4.0.0" },
     { name = "h5py" },
     { name = "numpy", specifier = "==1.26.4" },
@@ -400,14 +396,11 @@ requires-dist = [
     { name = "pymatgen", specifier = ">=2024.8.9" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
     { name = "scikit-learn" },
-    { name = "tensorboard" },
-    { name = "torch", specifier = "==2.6.0" },
-    { name = "torchvision" },
+    { name = "tensorboard", marker = "extra == 'ml'" },
+    { name = "torch", marker = "extra == 'ml'", specifier = "==2.6.0" },
+    { name = "torchvision", marker = "extra == 'ml'" },
 ]
-provides-extras = ["dev"]
-
-[package.metadata.requires-dev]
-dev = [{ name = "pytest", specifier = ">=8.4.2" }]
+provides-extras = ["ml", "dev"]
 
 [[package]]
 name = "dill"

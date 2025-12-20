@@ -19,7 +19,7 @@ import glob
 import h5py as h5
 import sys
 import os
-from utils import jobdone, check_flows_status
+from .utils import jobdone, check_flows_status
 from .from_model.data import ManyBodyData 
 
 

@@ -4,6 +4,8 @@ import subprocess
 import numpy as np
 from ..core import fortran_str
 from ..core import Task
+from .kgrid_x import kgrid_x_main
+import shutil
 
 __all__ = ['get_kpt_grid', 'get_kgrid_input', 'get_kpoints', 'get_kqshift',
            'get_kpt_grid_nosym', 'KgridTask']
@@ -86,8 +88,11 @@ class KgridTask(Task):
 
     def run(self):
         try:
-            subprocess.call([self.executable, self.inputname,
-                             self.outputname, self.logname])
+            if shutil.which(self.executable) is None:
+                kgrid_x_main(self.inputname, self.outputname, self.logname)
+            else:
+                subprocess.call([self.executable, self.inputname,
+                                 self.outputname, self.logname])
         except OSError as E:
             message = (str(E) + '\n\n' +
             79 * '=' + '\n\n' +
@@ -311,7 +316,10 @@ def get_kpt_grid(structure, ngkpt,
 
     # Run kgrid.x
     try:
-        subprocess.call([executable, inputname, outputname, logname])
+        if shutil.which(executable) is None:
+            kgrid_x_main(inputname, outputname, logname)
+        else:
+            subprocess.call([executable, inputname, outputname, logname])
     except OSError as E:
         message = (str(E) + '\n\n' +
         79 * '=' + '\n\n' +

@@ -38,18 +38,23 @@ This package provides deep learning models for DFT-GW-BSE calculations from crys
 #### Option 1: Using `uv` 
 
 ```bash
+# Clone the repository
+git clone https://github.com/bwhou1997/DeepGWBSE.git
 cd DeepGWBSE
-[Option] curl -LsSf https://astral.sh/uv/install.sh | sh  # if you don't have uv installed
-uv sync
+curl -LsSf https://astral.sh/uv/install.sh | sh # [Optional] Install uv if not already available
+uv sync --extra ml # Install full version
 source .venv/bin/activate
 ```
+
 #### Option 2: Using `pip` (Package installation)
 ```bash
+git clone https://github.com/bwhou1997/DeepGWBSE.git
 cd DeepGWBSE
 conda create -n deep-gwbse python=3.9 -y
 conda activate deep-gwbse
-pip install -e .
+pip install -e ".[ml]" # Install full version
 ```
+**Note:** If you are only interested in the first-principle DFT-GW-BSE workflow generation, you can simply run `uv sync` or `pip install -e .` to install the lite version (without deep learning dependencies).
 
 ## Quick Start
 
@@ -66,7 +71,7 @@ Create DFT-GW-BSE workflows for multiple materials from a directory:
 
 ```bash
 # Make sure BerkeleyGW/bin/kgrid.x is in your $PATH (we will integrate it into the package in the future)
-python flows.py [ -c ./config/fpconfig.json]
+python flows.py [-c ./config/fpconfig.json]
 ```
 
 [Optional]: Create augmentation workflows by shifting k-grid (Skip this step if you haven't finished BSE calculations in `./flows`):

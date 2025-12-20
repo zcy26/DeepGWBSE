@@ -39,18 +39,14 @@ classifiers = [
 ]
 
 # ---------------------------------------------------------------------
-# Runtime dependencies (aligned with your conda env)
+# Runtime dependencies (LITE / non-DL)
 # ---------------------------------------------------------------------
 dependencies = [
     "numpy==1.26.4",
     "pymatgen>=2024.8.9",
     "ase==3.23.0",
-    "torch==2.6.0",
-    "torchvision",
     "h5py",
-    "e2cnn",
     "pathos",
-    "tensorboard",
     "scikit-learn",
 ]
 
@@ -58,6 +54,14 @@ dependencies = [
 # Optional dependencies
 # ---------------------------------------------------------------------
 [project.optional-dependencies]
+
+ml = [
+    "torch==2.6.0",
+    "torchvision",
+    "e2cnn",
+    "tensorboard",
+]
+
 dev = [
     "pytest>=7.0.0",
     "black>=22.0.0",
@@ -90,8 +94,3 @@ packages = { find = {} }
 [tool.black]
 line-length = 100
 target-version = ["py39"]
-
-[dependency-groups]
-dev = [
-    "pytest>=8.4.2",
-]
