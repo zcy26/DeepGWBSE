@@ -34,20 +34,35 @@ def print_model_size(model, model_name="Model"):
     return param_number
 
 def timeCudaWatch(func):
-    """Decorator to measure execution time of a function."""
+    """Decorator to measure execution time (GPU if available, else CPU)."""
     @wraps(func)
     def wrapper(*args, **kwargs):
-        start = torch.cuda.Event(enable_timing=True)
-        end = torch.cuda.Event(enable_timing=True)
-        
-        start.record()
+
+        # GPU timing path
+        if torch.cuda.is_available():
+            start = torch.cuda.Event(enable_timing=True)
+            end = torch.cuda.Event(enable_timing=True)
+
+            start.record()
+            result = func(*args, **kwargs)
+            end.record()
+
+            torch.cuda.synchronize()
+            logging.debug(
+                f"{func.__name__} execution time: {start.elapsed_time(end) * 1e-3:.3f} s"
+            )
+            return result
+
+        # CPU timing path
+        t0 = time.perf_counter()
         result = func(*args, **kwargs)
-        end.record()
-        torch.cuda.synchronize()
-        
-        logging.debug(f"{func.__name__} execution time: {start.elapsed_time(end) * 1e-3:.3f} s")
+        t1 = time.perf_counter()
+
+        logging.debug(f"{func.__name__} execution time: {t1 - t0:.3f} s")
         return result
+
     return wrapper
+
 
 
 
