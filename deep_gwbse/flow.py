@@ -170,9 +170,12 @@ class DFT_GW_HPRO_Flow(Workflow):
                 self.n_z_valence += pseudos_z_valence[pp]
             else:
                 print(f'warning: upf is not found for {pp}')
-        if True: # consider SOC in the future
+
+        if not kwargs.get('SOC', False):
             self.n_z_valence = int(self.n_z_valence // 2)
-            self.n_z_valence = None if self.n_z_valence == 0 else self.n_z_valence
+        else:
+            self.n_z_valence = int(self.n_z_valence)
+        self.n_z_valence = None if self.n_z_valence == 0 else self.n_z_valence
 
         # update band_index_min & band_index_max
         assert self.n_z_valence != None, "n_z_valence is not found"
