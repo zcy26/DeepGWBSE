@@ -374,11 +374,17 @@ class bse_training_manager_for_deepgwbse_paper:
             np.savetxt(os.path.join(save_path, 'data1_bse_original.dat'), eval_original)
             np.savetxt(os.path.join(save_path, 'data2_bse_pred.dat'), eval_pred)
             plt.scatter(eval_original, eval_pred)
+            plt.xlabel('Original')
+            plt.ylabel('Predicted')
+            plt.title('BSE Training Parity Plot(This is only a test!!!)')
             plt.savefig(os.path.join(save_path, 'bse_original_vs_pred.png'))
         else:
             np.savetxt('data1_bse_original.dat', eval_original)
             np.savetxt('data2_bse_pred.dat', eval_pred)
             plt.scatter(eval_original, eval_pred)
+            plt.xlabel('Original')
+            plt.ylabel('Predicted')
+            plt.title('BSE Training Parity Plot(This is only a test fig!!!)')
             plt.savefig('bse_original_vs_pred.png')
 
 
