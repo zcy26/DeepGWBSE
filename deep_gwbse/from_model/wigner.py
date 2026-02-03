@@ -9,7 +9,7 @@ import time
 from scipy.interpolate import LinearNDInterpolator
 import logging
 import plotly.graph_objects as go
-from .model_util import time_watch
+from deep_gwbse.from_model.model_util import time_watch
 au2ang = 0.52917721067
 class WignerXY:
     def __init__(self, lattice: np.ndarray, FFT_grid_shape: np.array, 
@@ -163,15 +163,24 @@ class WignerXY:
         ###########
         if go_3D:
             xi, yi, zi = np.mgrid[
-            self.grid_points_folded[:, 0].min():self.grid_points_folded[:, 0].max():self.zi.shape[0]*1j,
-            self.grid_points_folded[:, 1].min():self.grid_points_folded[:, 1].max():self.zi.shape[1]*1j,
-            0:self.lattice[2,2]:self.zi.shape[2]*1j]
+                self.grid_points_folded[:, 0].min():self.grid_points_folded[:, 0].max():self.zi.shape[0]*1j,
+                self.grid_points_folded[:, 1].min():self.grid_points_folded[:, 1].max():self.zi.shape[1]*1j,
+                0:self.lattice[2,2]:self.zi.shape[2]*1j
+            ]
+
+            # some plotting libraries do not handle NaN well, replace NaN with 0 for visualization
+            values = np.nan_to_num(self.zi, nan=0.0)
 
             fig = go.Figure(data=go.Volume(
-                x=xi.flatten(), y=yi.flatten(), z=zi.flatten(),
-                value=self.zi.flatten(),
-                opacity=0.2, surface_count=20, colorscale='Viridis'
+                x=xi.flatten(),
+                y=yi.flatten(),
+                z=zi.flatten(),
+                value=values.flatten(),
+                opacity=0.2,
+                surface_count=20,
+                colorscale='Viridis'
             ))
+
             fig.update_layout(title='3D Wigner-Seitz Density Visualization')
             fig.show()
 
