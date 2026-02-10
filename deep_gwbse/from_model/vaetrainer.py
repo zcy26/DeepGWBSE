@@ -1,6 +1,5 @@
-#%%
 import math
-from .trainer import Trainer
+from deep_gwbse.from_model.trainer import Trainer
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -9,17 +8,17 @@ import numpy as np
 import torch
 import torchvision
 import torchvision.transforms as transforms
-from torch.utils.data import DataLoader
 import os
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 import torchvision.transforms.functional as TF
-import matplotlib.pyplot as plt
-from .e2vae import EquivariantVAE, vae_loss
+from deep_gwbse.from_model.e2vae import EquivariantVAE, vae_loss
+from deep_gwbse.from_model.e3vae import EquivariantVAE3D
 from torch.utils.data import DataLoader
-from .data import ManyBodyData
+from deep_gwbse.from_model.data import ManyBodyData
 from sklearn.metrics import r2_score
 
+torch.backends.cudnn.enabled = False
 class WFNVAETrainer(Trainer):
     """
     For options in `kwargs`, see the `__init__` function of `Trainer`.
@@ -33,11 +32,14 @@ class WFNVAETrainer(Trainer):
 
     def get_loss(self, input)->torch.Tensor:
         x, mask = input
+        # print('-->debug: x shape', x.shape, 'mask shape', mask.shape)
         x = x.to(self.device)
         mask = ~mask.to(self.device)
         x_recon, mu, logvar = self.model(x)
         # Avoid directly multiplying the mask to x or x_recon to ensure proper loss calculation, accounting for normalization and NaN handling.
-        return self.loss(x_recon[:, mask.squeeze()], x[:, mask.squeeze()], mu, logvar)
+        # return self.loss(x_recon[:, mask.squeeze()], x[:, mask.squeeze()], mu, logvar)
+        # print('-->debug: x_recon shape', x_recon.shape, 'mu shape', mu.shape, 'logvar shape', logvar.shape)
+        return self.loss(x_recon*mask, x*mask, mu, logvar)
         
     def evaluate(self, input=None, mask=None, **kwargs):
         """
@@ -99,9 +101,31 @@ def wfn_collate_fn(batch):
 
     return wfn, mask
 
+def wfn_3d_wigner_collate_fn(batch):
+    assert len(batch)==1, "Batch size should be 1 for WFN data (each material is treated as a batch)"
+    wfn3d = batch[0]["wfn"]
+    nk, nb, X, Y, Z = wfn3d.shape
+
+    wfn = wfn3d.reshape(nk*nb, 1, X, Y, Z) # channel dimension is 1 for 3D wave function data
+    wfn = torch.from_numpy(wfn).float()
+    scaling_factor = 8 # TODO: make the process determining the scaling factor automatic
+    delta_X = scaling_factor * math.ceil(X / scaling_factor) - X
+    delta_Y = scaling_factor * math.ceil(Y / scaling_factor) - Y
+    delta_Z = scaling_factor * math.ceil(Z / scaling_factor) - Z
+    # wfn = F.pad(wfn, (0, delta_Z, 0, delta_Y, 0, delta_X), mode="constant", value=np.nan)
+    wfn = F.pad(wfn, (0, delta_Z, 0, delta_Y, 0, delta_X), mode="constant", value=np.nan)
+    mask = torch.isnan(wfn[0])[None, ...]
+    wfn = torch.nan_to_num(wfn, nan=0.0)
+    max_image = wfn.max(dim=1)[0].max(dim=1)[0].max(dim=1)[0].max(dim=1)[0]  # Extract max along each axis
+    wfn = wfn / max_image[:, None, None, None, None]
+
+    return wfn, mask    
+
+
+
 if __name__ == "__main__":
     config_model_path = "./vae_e2_wfn.save"
-    num_epoches = 200
+    num_epoches = 10
     beta = 0.0
     train_val_split = 0.8 # 
 
@@ -128,7 +152,6 @@ if __name__ == "__main__":
     vae_trainer.load_model(load_best=True)
     vae_trainer.train(num_epoches, dataloader_train, dataloader_val, continued=True)
 
-    #%%
     vae_trainer.load_model(load_best=True)
     x, x_recon = vae_trainer.evaluate(dataloader_val)
     sample_idxs = range(10)
@@ -143,4 +166,50 @@ if __name__ == "__main__":
     axes[0, 0].set_ylabel("Original")
     axes[1, 0].set_ylabel("Reconstructed")
     plt.show()
-    # %%
+
+    ########################################################################################################
+    ### 3d bulk vae
+    config_model_path_3d = "./vae_e3_wfn.save"
+    num_epoches_3d = 1000
+    beta_3d = 0.0
+    train_val_split_3d = 0.8 # 
+
+
+    wf3ddata = ManyBodyData.from_existing_dataset('./dataset/dataset_WFN_3D.h5')
+
+    wf3ddata_train = wf3ddata[:int(len(wf3ddata)*train_val_split_3d)]
+    wf3ddata_val = wf3ddata[int(len(wf3ddata)*train_val_split_3d):]
+    # TODO: It seems collate fn doesn't give 4 divisible
+    dataloader_train_3d = DataLoader(wf3ddata_train, batch_size=1, collate_fn=wfn_3d_wigner_collate_fn)
+    dataloader_val_3d = DataLoader(wf3ddata_val, batch_size=1, collate_fn=wfn_3d_wigner_collate_fn)
+
+    if os.path.exists(config_model_path_3d):
+        print("Loading model from", config_model_path_3d)
+        vae3d = Trainer.configure_model(EquivariantVAE3D, config_model_path_3d)
+    else:
+        vae3d = EquivariantVAE3D(input_channels=1,
+                                 irrep_order=0,
+                                 hidden_cnn_channels=[16, 32, 64, 128],
+                                 hidden_pooling=[True, True, True, False],
+                                 kernel_size=[3,3,3,3])
+    
+    optimizer_3d = torch.optim.Adam(vae3d.parameters(), lr=1e-3)
+
+    vae_trainer_3d = WFNVAETrainer(vae3d, optimizer_3d, beta=beta_3d, model_name="vae_e3_wfn")
+    vae_trainer_3d.load_model(load_best=True)
+    vae_trainer_3d.train(num_epoches_3d, dataloader_train_3d, dataloader_val_3d, continued=True)
+
+    vae_trainer_3d.load_model(load_best=True)
+    x_3d, x_recon_3d = vae_trainer_3d.evaluate(dataloader_val_3d)
+    sample_idxs_3d = range(10)
+    i_channel_3d = 0
+    fig, axes = plt.subplots(2, len(sample_idxs_3d), figsize=(len(sample_idxs_3d), 3))
+    for i_fig, i_sample in enumerate(sample_idxs_3d):
+        axes[0, i_fig].imshow(x_3d[i_sample, 0, :, :, :].sum(axis=-1))
+        axes[0, i_fig].axis("off")
+        axes[1, i_fig].imshow(x_recon_3d[i_sample, 0, :, :, :].sum(axis=-1))
+        axes[1, i_fig].axis("off")
+    
+    axes[0, 0].set_ylabel("Original")
+    axes[1, 0].set_ylabel("Reconstructed")
+    plt.show()

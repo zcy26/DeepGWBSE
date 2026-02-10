@@ -10,7 +10,7 @@ from tqdm import tqdm
 import os
 import torch
 from os.path import join as pjoin
-from .e2vaetrainer import wfn_collate_fn, WFNVAETrainer
+from .vaetrainer import wfn_collate_fn, WFNVAETrainer
 from .e2vae import EquivariantVAE
 from .trainer import Trainer
 

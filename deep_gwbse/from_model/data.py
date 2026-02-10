@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader, TensorDataset
-from .interface import wfn, eqp, AScvk
-from .model_util import time_watch, memory_watch
+from deep_gwbse.from_model.interface import wfn, eqp, AScvk
+from deep_gwbse.from_model.model_util import time_watch, memory_watch
 from pathos.multiprocessing import ProcessingPool as Pool
 import os
 from tqdm import tqdm
@@ -12,7 +12,7 @@ import h5py as h5
 import logging
 import numpy as np
 import copy
-from ..utils import check_flows_status
+from deep_gwbse.utils import check_flows_status
 """
 Author:  Bowen Hou
 Contact: bowen.hou@yale.edu
@@ -76,6 +76,7 @@ class DataSetInfo:
         self.nc_wfn = kwargs.get('nc_wfn')
         self.nv_wfn = kwargs.get('nv_wfn')
         self.useWignerXY = kwargs.get('useWignerXY', False)
+        self.useWignerXYZ = kwargs.get('useWignerXYZ', False)
         self.cell_slab_truncation = kwargs.get('cell_slab_truncation', 40) # Required for Wigner
         self.AngstromPerPixel = kwargs.get('AngstromPerPixel', 0.1) # Required for Wigner
         self.AngstromPerPixel_z = kwargs.get('AngstromPerPixel_z', 0.1) # Required for Wigner
@@ -392,6 +393,9 @@ class ManyBodyData(Dataset):
                 # put info dict into h5 file
                 f.create_group('info')
                 for key, value in info.__dict__.items():
+                    # print('--debug:', key, value)
+                    if value is None:
+                        value = np.nan
                     f['info'].create_dataset(key, data=value)
                 print(f"[Series]: creating dataset file: {os.path.abspath(f.filename)}")
 
@@ -700,6 +704,16 @@ class ToyDataSet(Dataset):
         return ManyBodyData.from_existing_dataset(f'{mbformer_data_dir}/dataset_WFN.h5')
     
     @staticmethod
+    def get_wfn_3d_dataset(mbformer_data_dir: str = './dataset/', toy_data_path: str = '../../examples/flows', read=True):
+        if not os.path.exists(f'{mbformer_data_dir}/dataset_WFN_3D.h5') or not read:
+            return ManyBodyData(flows_dir=toy_data_path, dataset_dir=mbformer_data_dir, dataset_type='WFN', dataset_fname='dataset_WFN_3D.h5',
+                          load_dataset=False, cell_slab_truncation=None, useWignerXYZ=True, AngstromPerPixel=0.1,
+                          upsampling_factor=2, multiprocessing=True,
+                          nc_wfn=4, nv_wfn=2)
+        return ManyBodyData.from_existing_dataset(f'{mbformer_data_dir}/dataset_WFN_3D.h5')
+
+
+    @staticmethod
     def get_gw_dataset(mbformer_data_dir: str = './dataset/', toy_data_path: str = '../../examples/flows', read=True):
         if not os.path.exists(f'{mbformer_data_dir}/dataset_GW.h5') or not read:
             return ManyBodyData(flows_dir=toy_data_path, dataset_dir=mbformer_data_dir, dataset_type='GW', dataset_fname='dataset_GW.h5',
@@ -726,8 +740,13 @@ if __name__ == "__main__":
     wfdata = ToyDataSet.get_wfn_dataset(read=False)
     wfdata = ToyDataSet.get_wfn_dataset(read=True)
 
+    wf3ddata = ToyDataSet.get_wfn_3d_dataset(read=False)
+    wf3ddata = ToyDataSet.get_wfn_3d_dataset(read=True)
+
     """WFN Unit Test"""
     assert abs(wfdata[1]['wfn'][0,0,14,13,15] - 2.1230801376011337e-06) < 1e-10, "WFN Unit Test Failed"
+    # assert abs(wf3ddata[1]['wfn'][0,0,13,13,110] - 0.00045705909086906754) < 1e-10, "WFN 3D Unit Test Failed"
+    assert wf3ddata[1]['wfn'].shape == (2, 6, 26,29, 200), "WFN 3D shape mismatch"
 
     """GW Usage"""
     # please see ToyDataSet.get_gw_dataset() for how to use ManyBodyData (Two ways)

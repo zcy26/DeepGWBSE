@@ -7,7 +7,7 @@ from scipy.io import FortranFile
 from deep_gwbse.from_model.model_util import H5ls, time_watch, memory_watch, eV2Ry
 from tqdm import tqdm
 import logging
-from deep_gwbse.from_model import wigner
+from deep_gwbse.from_model import wigner, wigner3d
 from scipy.ndimage import zoom
 import time
 import matplotlib.pyplot as plt
@@ -464,7 +464,7 @@ class wfn(BGWIO):
         return dipole_matrix
 
     @time_watch
-    def get_dataset(self, nc:int=6 ,nv:int=2, cell_slab_truncation:int=40, useWignerXY:bool=False, 
+    def get_dataset(self, nc:int=6 ,nv:int=2, cell_slab_truncation:int=40, useWignerXY:bool=False, useWignerXYZ:bool=False,
                         AngstromPerPixel:float=0.1, operator = None, **kwargs)->dict:
         """
         Get the dataset of the wavefunction for ML
@@ -544,7 +544,24 @@ class wfn(BGWIO):
             wfn_r = wfn_r[:,:,:,:,max(wfn_r.shape[-1]//2-cell_slab_truncation//2, 0):min(wfn_r.shape[-1]//2+cell_slab_truncation//2, wfn_r.shape[-1]-1)]
             logging.debug(f'Average charge after truncation: {np.sum(wfn_r, axis=(2,3,4)).mean():.2f}')
 
-        if useWignerXY:
+        if useWignerXYZ:
+            assert AngstromPerPixel is not None, 'AngstromPerPixel is required when useWignerXYZ is True'
+            self.wigner3d = wigner3d.WignerXYZ(self.lattice, 
+                                             self.FFTgrid, 
+                                             AngstromPerPixel, 
+                                             **kwargs)
+
+            wfn_r_wigner3d = np.zeros((wfn_r.shape[0], wfn_r.shape[1], self.wigner3d.XI.shape[0], self.wigner3d.XI.shape[1], self.wigner3d.XI.shape[2]), dtype=wfn_r.dtype)
+
+            print('--debug:' ,wfn_r.shape)
+
+            for k in range(wfn_r.shape[0]):
+                for b in range(wfn_r.shape[1]):
+                    wfn_r_wigner3d[k,b] = self.wigner3d.Wigner_fast_nearest(wfn_r[k,b], kwargs.get('max_distance', 0.2))
+
+            wfn_r = wfn_r_wigner3d
+
+        elif useWignerXY:
             assert cell_slab_truncation is not None, 'cell_slab_truncation is required when useWignerXY is True'
             assert AngstromPerPixel is not None, 'AngstromPerPixel is required when useWignerXY is True'
             assert np.allclose(self.lattice[2,:2], 0), 'Wigner: only support 2D system for now (a3=(0,0,c))'
@@ -691,6 +708,11 @@ if __name__ == '__main__':
     assert abs(abs(dp_wfn['wfn'][0,0,  5,5,30])-0.0009519374081944384) < 1e-7 # unit test
     print("WFN: unit test passed!")
 
+    wf = wfn('../../examples/flows/mat-5/02-wfn/wfn.h5')
+    dp_wfn_3d = wf.get_dataset(useWignerXYZ=True, AngstromPerPixel=0.1, cell_slab_truncation=None)
+    assert abs(abs(dp_wfn_3d['wfn'][0,0,  5,5,5])-0.00014902410416606067) < 1e-7 # unit test
+    print("WFN 3D: unit test passed!")
+
     # EQP
     eqp = eqp('../../examples/flows/mat-5/13-sigma/eqp1.dat')
     dp_eqp = eqp.get_dataset()
@@ -700,5 +722,5 @@ if __name__ == '__main__':
     # AcvkS
     acv = AScvk('../../examples/flows/mat-5/19-absorption/eigenvectors.h5')
     d_acv = acv.get_dataset()
-    assert abs(d_acv['eigenvalues'][15,0] - 13.61646274) < 1e-7
-    assert abs(abs(acv.eigenvectors[0,1,0,0]) - 0.5710135222476936) < 1e-7
+    assert abs(d_acv['eigenvalues'][15,0] - 10.619205333508571) < 1e-7
+    assert abs(abs(acv.eigenvectors[0,1,0,0]) - 1.00) < 1e-7

@@ -66,6 +66,18 @@ wheels = [
 ]
 
 [[package]]
+name = "autograd"
+version = "1.8.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/67/1c/3c24ec03c8ba4decc742b1df5a10c52f98c84ca8797757f313e7bdcdf276/autograd-1.8.0.tar.gz", hash = "sha256:107374ded5b09fc8643ac925348c0369e7b0e73bbed9565ffd61b8fd04425683", size = 2562146, upload-time = "2025-05-05T12:49:02.502Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/84/ea/e16f0c423f7d83cf8b79cae9452040fb7b2e020c7439a167ee7c317de448/autograd-1.8.0-py3-none-any.whl", hash = "sha256:4ab9084294f814cf56c280adbe19612546a35574d67c574b04933c7d2ecb7d78", size = 51478, upload-time = "2025-05-05T12:49:00.585Z" },
+]
+
+[[package]]
 name = "bcrypt"
 version = "5.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -600,6 +612,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "ase" },
+    { name = "escnn" },
     { name = "h5py", version = "3.14.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "h5py", version = "3.15.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "mp-api", version = "0.45.9", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
@@ -635,6 +648,7 @@ requires-dist = [
     { name = "ase", specifier = "==3.23.0" },
     { name = "black", marker = "extra == 'dev'", specifier = ">=22.0.0" },
     { name = "e2cnn", marker = "extra == 'ml'" },
+    { name = "escnn", specifier = ">=1.0.11" },
     { name = "flake8", marker = "extra == 'dev'", specifier = ">=4.0.0" },
     { name = "h5py" },
     { name = "mp-api", specifier = ">=0.45.9" },
@@ -750,6 +764,27 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/6a/07/9979ae29d4b2bc643e870aca427a546ea2e8cf3819cdfe39179e2e983b5e/emmet_core-0.86.3.tar.gz", hash = "sha256:f3b30560f4461db7073e846c7c484713176b7fc01d1450ddb01451979ed5fb9c", size = 308021, upload-time = "2026-01-30T18:11:55.934Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c6/c7/a2b98de578ec870cd40d6c4b944465daeda48062f2ee086a0ee429fcde5c/emmet_core-0.86.3-py3-none-any.whl", hash = "sha256:00689d9102f1621d8889a50707a55e8cfcf16467ec74789350d36daa9e2c7884", size = 308806, upload-time = "2026-01-30T18:11:53.039Z" },
+]
+
+[[package]]
+name = "escnn"
+version = "1.0.11"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "autograd" },
+    { name = "joblib" },
+    { name = "lie-learn" },
+    { name = "numpy" },
+    { name = "py3nj" },
+    { name = "pymanopt" },
+    { name = "scipy", version = "1.13.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "scipy", version = "1.15.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
+    { name = "scipy", version = "1.16.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "torch" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/41/87/11581be4af7bdb3f8d5e95836912d12656ff4d58b1caa10349b93eeb5520/escnn-1.0.11.tar.gz", hash = "sha256:c2e086e39e0215b163ac2f0df66e0e5691eda06f7fb6f541bd45239e831d3e51", size = 254519, upload-time = "2023-07-17T22:56:09.056Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e5/67/7eb8a086785473a325b23925d0d3c0ce787f45c0eaf909e48e1b0c192cf4/escnn-1.0.11-py3-none-any.whl", hash = "sha256:0097a3752e317be70bccf0bb14fc9674fbb859ae5ddd735b8cf35a8533f6f536", size = 373941, upload-time = "2023-07-17T22:56:06.606Z" },
 ]
 
 [[package]]
@@ -1312,6 +1347,23 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/27/dd/4270b2c5e2ee49316c3859e62293bd2ea8e382339d63ab7bbe9f39c0ec3b/latexcodec-3.0.1.tar.gz", hash = "sha256:e78a6911cd72f9dec35031c6ec23584de6842bfbc4610a9678868d14cdfb0357", size = 31222, upload-time = "2025-06-17T18:47:34.051Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b5/40/23569737873cc9637fd488606347e9dd92b9fa37ba4fcda1f98ee5219a97/latexcodec-3.0.1-py3-none-any.whl", hash = "sha256:a9eb8200bff693f0437a69581f7579eb6bca25c4193515c09900ce76451e452e", size = 18532, upload-time = "2025-06-17T18:47:30.726Z" },
+]
+
+[[package]]
+name = "lie-learn"
+version = "0.0.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "requests" },
+    { name = "scipy", version = "1.13.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "scipy", version = "1.15.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
+    { name = "scipy", version = "1.16.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e8/37/9d4aba90407b499997518e1a0dffb5575c583062be8d57a793fd1dfaf7ec/lie_learn-0.0.2-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c9bcaa0cc5ca6b9ca6b8fb551468214b52e728f58a8f63c2555b84474279ea63", size = 16471459, upload-time = "2024-07-21T11:20:36.57Z" },
+    { url = "https://files.pythonhosted.org/packages/92/86/d236d87458fecdca8dc57e7473a4db14b7e138ab86184fdc39e133b2c873/lie_learn-0.0.2-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:985cfa99ac344abba11b9381a0b7c60766db1accf23462640fb35ba35c1a789b", size = 16574420, upload-time = "2024-07-21T11:20:39.389Z" },
+    { url = "https://files.pythonhosted.org/packages/74/8b/e87229d104e5d4c69d0c9bf33b9524b4c405a60ee5a3262cdd43e0fb2376/lie_learn-0.0.2-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d838de6c5815a5fb921b71afaf8567a81647f01710c916e8fbb41d95a0f80ca3", size = 16474216, upload-time = "2024-07-21T11:20:43.983Z" },
 ]
 
 [[package]]
@@ -2230,6 +2282,15 @@ wheels = [
 ]
 
 [[package]]
+name = "py3nj"
+version = "0.2.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/79/39/608a0b4fa24bd07e42acfbe914eff4f32382e3861d81853d81f2c6d9fa7b/py3nj-0.2.1.tar.gz", hash = "sha256:3f9a79b3b18a51570c835c174a941f3cd3b552d1d3414debebeb70ce759512fe", size = 49969, upload-time = "2023-08-27T06:35:31.28Z" }
+
+[[package]]
 name = "pybtex"
 version = "0.25.1"
 source = { registry = "https://pypi.org/simple" }
@@ -2412,6 +2473,21 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/b0/77/a5b8c569bf593b0140bde72ea885a803b82086995367bf2037de0159d924/pygments-2.19.2.tar.gz", hash = "sha256:636cb2477cec7f8952536970bc533bc43743542f70392ae026374600add5b887", size = 4968631, upload-time = "2025-06-21T13:39:12.283Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c7/21/705964c7812476f378728bdf590ca4b771ec72385c533964653c68e86bdc/pygments-2.19.2-py3-none-any.whl", hash = "sha256:86540386c03d588bb81d44bc3928634ff26449851e99741617ecb9037ee5ec0b", size = 1225217, upload-time = "2025-06-21T13:39:07.939Z" },
+]
+
+[[package]]
+name = "pymanopt"
+version = "2.2.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "scipy", version = "1.13.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "scipy", version = "1.15.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
+    { name = "scipy", version = "1.16.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9c/d1/ea4a088699e1ad78033e607e93b4d05c1158d0332cdd25d2d6c69f00838f/pymanopt-2.2.1.tar.gz", hash = "sha256:c784929a436eb06d73371b53ae5db3cdc19c5e60280f8131553bc805cbf7a1da", size = 430326, upload-time = "2024-09-20T07:42:05.268Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/82/2b/b86705da6bbc42a57e8145420aa5e0d360662efd9cd6126ac2462b0062bd/pymanopt-2.2.1-py3-none-any.whl", hash = "sha256:75fb11cc924252c8f045779a8ed4b054ddb805a540c314989598d60447560818", size = 71990, upload-time = "2024-09-20T07:42:03.575Z" },
 ]
 
 [[package]]

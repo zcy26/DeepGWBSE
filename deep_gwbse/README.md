@@ -139,7 +139,7 @@ Related files on top of the file:
 - `from_model/trainer.py`: train the model on the dataset
 - `from_model/bsetrainer.py` (**unit-test**)
 - `from_model/gwtrainer.py`
-- `from_model/e2vaetrainer.py` (todo)
+- `from_model/vaetrainer.py` (todo)
 - `from_mode/wfnembedder.py` (**unit-test**)
   - create latent rep to manybodydata
   - create latent rep and save to manybodydata h5 file (suggested!)

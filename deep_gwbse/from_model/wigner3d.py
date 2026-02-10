@@ -188,7 +188,7 @@ def plot_wigner_3d(XI, YI, ZI, density):
     """
 
     density = np.where(np.isnan(density), 0, density)
-    density = np.where(density < 0.12*density.max(), 0, density)
+    density = np.where(density < 0.16*density.max(), 0, density)
 
     fig = go.Figure(
         data=go.Volume(
@@ -217,11 +217,13 @@ def plot_wigner_3d(XI, YI, ZI, density):
 
 if __name__ == "__main__":
     import interface
+    import matplotlib.pyplot as plt
     au2ang = 0.52917721067
 
     # wf = interface.wfn('/pscratch/sd/b/bwhou/16-NCS/DeepGWBSE/reply/01-bulk-calculation/small_test/flows/001-mp-1019089_KMgAs/02-wfn/wfn.h5')
-    wf = interface.wfn('../../examples/flows/mat-5/02-wfn/wfn.h5')
-    
+    # wf = interface.wfn('../../examples/flows/mat-5/02-wfn/wfn.h5')
+    wf = interface.wfn('/pscratch/sd/b/bwhou/16-NCS/DeepGWBSE/reply/01-bulk-calculation/flows/002-mp-1185959_MgS2/02-wfn/wfn.h5')
+
     w00_3D = abs(wf.get_dataset(cell_slab_truncation=None, AngstromPerPixel=0.05)['wfn'][0,4,:,:,:])
     lattice = wf.crystal["avec"] * wf.crystal["alat"] * au2ang
     FFT_grid_shape = w00_3D.shape
@@ -229,7 +231,7 @@ if __name__ == "__main__":
     wigner = WignerXYZ(
         lattice,
         FFT_grid_shape,
-        AngstromPerPixel=0.2,
+        AngstromPerPixel=0.1,
         upsampling_factor=4,
     )
 

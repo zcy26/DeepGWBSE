@@ -40,7 +40,7 @@ print(f"BSE dataset: {len(bsedata) if hasattr(bsedata, '__len__') else 'created'
 print("\n\nPart 2: VAE Training\n\n")
 
 from deep_gwbse.from_model.data import ManyBodyData
-from deep_gwbse.from_model.e2vaetrainer import WFNVAETrainer, wfn_collate_fn
+from deep_gwbse.from_model.vaetrainer import WFNVAETrainer, wfn_collate_fn
 from deep_gwbse.from_model.e2vae import EquivariantVAE
 from deep_gwbse.from_model.trainer import Trainer
 from torch.utils.data import DataLoader
