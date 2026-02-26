@@ -553,7 +553,7 @@ class wfn(BGWIO):
 
             wfn_r_wigner3d = np.zeros((wfn_r.shape[0], wfn_r.shape[1], self.wigner3d.XI.shape[0], self.wigner3d.XI.shape[1], self.wigner3d.XI.shape[2]), dtype=wfn_r.dtype)
 
-            print('--debug:' ,wfn_r.shape)
+            # print('--debug:' ,wfn_r.shape)
 
             for k in range(wfn_r.shape[0]):
                 for b in range(wfn_r.shape[1]):

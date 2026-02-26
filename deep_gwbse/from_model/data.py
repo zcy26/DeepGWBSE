@@ -319,7 +319,7 @@ class ManyBodyData(Dataset):
             return None
 
         if self.multiprocessing:
-            with Pool(16) as pool: # It seems 32 or 16 works the best.
+            with Pool(32) as pool: # It seems 32 or 16 works the best.
                 if self.onlySave: # used to handle large dataset
                     list(tqdm(pool.imap(processor_return_None_wrapper, folder_list), total=len(folder_list), desc='Processing WFN data'))
                 else:

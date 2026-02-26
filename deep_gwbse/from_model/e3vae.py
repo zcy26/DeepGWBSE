@@ -478,36 +478,93 @@ def test(model=None):
 
         return rotated
 
-    def show_volume_3d_2x2(x, x_rot, y, y_rot_input, threshold=0.05):
+    # def show_volume_3d_2x2(x, x_rot, y, y_rot_input, threshold=0.05):
 
+    #     import matplotlib.pyplot as plt
+    #     import numpy as np
+
+    #     def get_voxels(vol):
+    #         data = vol[0, 0].detach().cpu().numpy()
+    #         return data > threshold
+
+    #     vols = [
+    #         (get_voxels(x), "Original Cylinder"),
+    #         (get_voxels(x_rot), "Rotated Cylinder"),
+    #         (get_voxels(y), "Model Output"),
+    #         (get_voxels(y_rot_input), "Output Rotated Input"),
+    #     ]
+
+    #     fig = plt.figure(figsize=(12, 12))
+
+    #     for i, (vox, title) in enumerate(vols):
+    #         ax = fig.add_subplot(2, 2, i + 1, projection='3d')
+    #         ax.voxels(vox, edgecolor='k')
+    #         ax.set_title(title)
+
+    #         # cleaner look
+    #         ax.set_xticks([])
+    #         ax.set_yticks([])
+    #         ax.set_zticks([])
+
+    #     plt.tight_layout()
+    #     plt.show()
+
+
+    def show_volume_3d_2x2(x, x_rot, y, y_rot_input, threshold=0.05):
         import matplotlib.pyplot as plt
         import numpy as np
+        import torch
+
+        def get_numpy(vol):
+            # replace NaNs with 0 first
+            data = torch.nan_to_num(vol[0, 0], nan=0.0).detach().cpu().numpy()
+            return data
 
         def get_voxels(vol):
-            data = vol[0, 0].detach().cpu().numpy()
+            data = get_numpy(vol)
             return data > threshold
 
         vols = [
-            (get_voxels(x), "Original Cylinder"),
-            (get_voxels(x_rot), "Rotated Cylinder"),
-            (get_voxels(y), "Model Output"),
-            (get_voxels(y_rot_input), "Output Rotated Input"),
+            (x, "Original Cylinder"),
+            (x_rot, "Rotated Cylinder"),
+            (y, "Model Output"),
+            (y_rot_input, "Output Rotated Input"),
         ]
 
+        # ---------- 3D voxel plots ----------
         fig = plt.figure(figsize=(12, 12))
 
-        for i, (vox, title) in enumerate(vols):
+        for i, (vol, title) in enumerate(vols):
+            vox = get_voxels(vol)
             ax = fig.add_subplot(2, 2, i + 1, projection='3d')
             ax.voxels(vox, edgecolor='k')
             ax.set_title(title)
 
-            # cleaner look
             ax.set_xticks([])
             ax.set_yticks([])
             ax.set_zticks([])
 
         plt.tight_layout()
         plt.show()
+
+        # ---------- 2D summed slice plots ----------
+        fig2 = plt.figure(figsize=(12, 12))
+
+        for i, (vol, title) in enumerate(vols):
+            data = get_numpy(vol)
+
+            # sum over last axis
+            slice_2d = np.sum(data, axis=-3)
+
+            ax = fig2.add_subplot(2, 2, i + 1)
+            im = ax.imshow(slice_2d)
+            ax.set_title(f"{title} (sum last axis)")
+            ax.axis('off')
+
+        plt.tight_layout()
+        plt.show()
+
+
 
     if model is None:
         model = single_e3CNN_module(
@@ -521,7 +578,7 @@ def test(model=None):
 
     model.eval()
 
-    x = create_cylinder(32)
+    x = create_cylinder(24, 3, 15)
     x = x.unsqueeze(0).unsqueeze(0).to(device)
 
     x_rot = rotate_volume(x, 45)
@@ -540,7 +597,7 @@ def test(model=None):
 
 
     # rotate output
-    y_rot_output = rotate_volume(y, 45)
+    # y_rot_output = rotate_volume(y, 45)
 
 
     show_volume_3d_2x2(
@@ -548,7 +605,7 @@ def test(model=None):
         x_rot,
         y,
         y_rot_input,
-        threshold=0.2
+        threshold=0.1
     )
 
 def set_seed(seed=42):
@@ -567,7 +624,7 @@ if __name__ == "__main__":
     torch.backends.cudnn.enabled = False # This is a very tricky bug. It seems cudnn only supports 2-5 dimensions, 
     # but escnn will somehow increase one dimension when using gpu, use this could avoid bug!
 
-    set_seed(42)
+    set_seed(41) # 41 is good
     model = single_e3CNN_module(
         input_channels=1,
         output_channels=16,
@@ -638,11 +695,13 @@ if __name__ == "__main__":
     x = torch.randn(12, 1, 26, 32, 202)
     x_recon, mu, logvar = e3vae(x)
 
-    x = x.to('cuda')
-    e3vae = e3vae.to('cuda')
-    x_recon, mu, logvar = e3vae(x)
 
-    # test(model=e3vae)
+
+    test(model=e3vae)
+
+    # x = x.to('cuda')
+    # e3vae = e3vae.to('cuda')
+    # x_recon, mu, logvar = e3vae(x)
 
     # visualization (sanity check)
     # test(model=model_enc)

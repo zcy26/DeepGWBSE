@@ -224,14 +224,14 @@ if __name__ == "__main__":
     # wf = interface.wfn('../../examples/flows/mat-5/02-wfn/wfn.h5')
     wf = interface.wfn('/pscratch/sd/b/bwhou/16-NCS/DeepGWBSE/reply/01-bulk-calculation/flows/002-mp-1185959_MgS2/02-wfn/wfn.h5')
 
-    w00_3D = abs(wf.get_dataset(cell_slab_truncation=None, AngstromPerPixel=0.05)['wfn'][0,4,:,:,:])
+    w00_3D = abs(wf.get_dataset(cell_slab_truncation=None, AngstromPerPixel=0.2)['wfn'][0,4,:,:,:])
     lattice = wf.crystal["avec"] * wf.crystal["alat"] * au2ang
     FFT_grid_shape = w00_3D.shape
 
     wigner = WignerXYZ(
         lattice,
         FFT_grid_shape,
-        AngstromPerPixel=0.1,
+        AngstromPerPixel=0.2,
         upsampling_factor=4,
     )
 
