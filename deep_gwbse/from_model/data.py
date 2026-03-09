@@ -324,7 +324,7 @@ class ManyBodyData(Dataset):
                     list(tqdm(pool.imap(processor_return_None_wrapper, folder_list), total=len(folder_list), desc='Processing WFN data'))
                 else:
                     self.data = list(tqdm(pool.imap(processor, folder_list), total=len(folder_list), desc='Processing WFN data'))
-                self.merge_dataset_h5(list(map(lambda x: x.decode('utf-8'), self.info.mat_id)), save_original=False, dataset_fname=self.dataset_fname)
+            self.merge_dataset_h5(list(map(lambda x: x.decode('utf-8'), self.info.mat_id)), save_original=False, dataset_fname=self.dataset_fname)
         else:
             if self.onlySave: # used to handle large dataset
                 list(tqdm(map(processor_return_None_wrapper, folder_list), total=len(folder_list), desc='Processing WFN data'))
