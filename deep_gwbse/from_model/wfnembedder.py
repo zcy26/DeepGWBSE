@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from .data import ManyBodyData
+from deep_gwbse.from_model.data import ManyBodyData
 import numpy as np
-from .model_util import H5ls
+from deep_gwbse.from_model.model_util import H5ls
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from pathos.multiprocessing import ProcessingPool as Pool
@@ -10,9 +10,10 @@ from tqdm import tqdm
 import os
 import torch
 from os.path import join as pjoin
-from .vaetrainer import wfn_collate_fn, WFNVAETrainer
-from .e2vae import EquivariantVAE
-from .trainer import Trainer
+from deep_gwbse.from_model.vaetrainer import wfn_collate_fn, WFNVAETrainer, wfn_3d_wigner_collate_fn
+from deep_gwbse.from_model.e2vae import EquivariantVAE
+from deep_gwbse.from_model.e3vae import EquivariantVAE3D
+from deep_gwbse.from_model.trainer import Trainer
 
 # class ManyBodyData_WFN_Embedder_pretrained:
 #     """
@@ -280,6 +281,43 @@ class E2VAEEmbedder(LatentEmbedderBASE):
         return mu.reshape(nk, nb, -1) # (nk, nb, latent_dim)
 
 
+class E3VAEEmbedder(LatentEmbedderBASE):
+    def __init__(self, latent_dim, model, model_name, save_path, **kwargs):
+        print("E3VAEEmbedder doesn't support customized latent_dim, it depends on the model")
+        self.kwargs = kwargs
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+        self.vaetrainer = WFNVAETrainer(model,
+                                        optimizer, # don't matter for evaluation
+                                        0.02, # doesn't matter for evaluation 
+                                        save_path=save_path,
+                                        model_name=model_name, 
+                                        **kwargs)
+        self.vaetrainer.load_model(load_best=True)
+        self.vaetrainer.model.eval()
+    
+    @torch.no_grad()
+    def embed(self, wfn_data: np.ndarray) -> np.ndarray:
+        nk, nb, X, Y, Z = wfn_data.shape
+        batch = [{'wfn':wfn_data}] # since wfn_collate_fn only support batch size 1
+        wfn_data, mask = wfn_3d_wigner_collate_fn(batch)
+        wfn_data = wfn_data.to(self.vaetrainer.device)
+        mask = ~mask.to(self.vaetrainer.device)
+        wfn_recon, mu, logvar = self.vaetrainer.model(wfn_data)
+
+        # GOP layer
+        mu = mu.mean(dim=(2,3,4))
+        # normalize dim=1
+        mu = mu / mu.sum(dim=1, keepdim=True)
+        self.mu = mu
+        self.wfn_data = wfn_data
+        self.wfn_recon = wfn_recon
+        self.mask = mask
+
+        mu = mu.detach().cpu().numpy()
+
+        return mu.reshape(nk, nb, -1) # (nk, nb, latent_dim)
+
+
 class OtherEmbedder(LatentEmbedderBASE):
     def __init__(self, latent_dim, **kwargs):
         pass
@@ -335,6 +373,7 @@ if __name__ == "__main__":
         wfn_data = wfn_data.cpu().numpy()
         wfn_recon = wfn_recon.cpu().numpy()
         mask = mask.cpu().numpy()
+        print('2D embedder wfn_data shape:', wfn_data.shape)
         plt.figure()
         plt.imshow(wfn_data[0].sum(0))
         plt.figure()
@@ -348,5 +387,38 @@ if __name__ == "__main__":
 
     else:
         print("vae_e2_wfn not found, skip E2VAEEmbedder test")
+
+    if os.path.exists('./vae_e3_wfn'+'.save'):
+        wfdata = ManyBodyData.from_existing_dataset('./dataset/dataset_WFN_3D.h5')
+        wfn_data = wfdata[0]['wfn']
+        vae = Trainer.configure_model(EquivariantVAE3D, './vae_e3_wfn.save')
+        vae_eb = E3VAEEmbedder(128,vae,"vae_e3_wfn",'./vae_e3_wfn.save')
+        mu = vae_eb.embed(wfn_data)
+        mu = vae_eb.mu
+        mask = vae_eb.mask
+        wfn_data = vae_eb.wfn_data
+        wfn_recon = vae_eb.wfn_recon
+        mask = ~mask
+        mask_nan = torch.where(mask, np.nan, 1.0)
+        wfn_recon = mask_nan * wfn_recon
+        wfn_data = mask_nan * wfn_data
+        wfn_data = wfn_data.cpu().numpy()
+        wfn_recon = wfn_recon.cpu().numpy()
+        mask = mask.cpu().numpy()
+        print('3D embedder wfn_data shape:', wfn_data.shape)
+        plt.figure()
+        plt.imshow(wfn_data[0, 0].sum(-1))
+        plt.figure()
+        plt.imshow(wfn_recon[0, 0].sum(-1))
+        # assert mu.shape == ()
+
+        # usage of E3VAEEmbedder
+        vae = Trainer.configure_model(EquivariantVAE3D, "./vae_e3_wfn.save")
+        eb = ManyBodyData_WFN_Embedder_pretrained(128, E3VAEEmbedder, model=vae, model_name='vae_e3_wfn', save_path='./vae_e3_wfn.save')
+        eb.create_latent_for_ManyBodyData_h5(wfdata, dataset_dir='./dataset', dataset_fname='dataset_WFN_3D_latent_vae.h5')
+    
+    else:
+        print("vae_e3_wfn not found, skip E3VAEEmbedder test")
+    
 
 
