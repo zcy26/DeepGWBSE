@@ -216,6 +216,7 @@ class ManyBodyData(Dataset):
         self.dataset_type = dataset_type
         self.dataset_fname = dataset_fname
         self.onlySave = onlySave
+        self.load_large_dataset_inference = kwargs.get('load_large_dataset_inference', False)
         self.kwargs = kwargs
         self.operator = operator
         
@@ -248,7 +249,7 @@ class ManyBodyData(Dataset):
         return self.data[idx]
     
     @classmethod
-    def from_existing_dataset(cls, existing_dataset_fname: str, data_slice:slice=None) -> 'ManyBodyData':
+    def from_existing_dataset(cls, existing_dataset_fname: str, data_slice:slice=None, **kwargs) -> 'ManyBodyData':
         assert os.path.exists(existing_dataset_fname), f"{existing_dataset_fname} does not exist"
         dataset_dir, dataset_fname = os.path.dirname(existing_dataset_fname), os.path.basename(existing_dataset_fname)
         print('Loading dataset info')
@@ -269,7 +270,8 @@ class ManyBodyData(Dataset):
                    multiprocessing=False,
                    onlySave=False,
                    data_slice=data_slice,
-                   **info_dict)
+                   **info_dict,
+                   **kwargs)
 
     def load_dataset(self, data_slice=None):
         """
@@ -288,7 +290,7 @@ class ManyBodyData(Dataset):
 
         self.info.mat_id = self.info.mat_id[data_slice] if data_slice is not None else self.info.mat_id
         print("loading data")
-        self.data = [self.datapoint_interface_h5(pjoin(self.dataset_dir, self.dataset_fname), mat_id, mode='r') for mat_id in self.info.mat_id]
+        self.data = [self.datapoint_interface_h5(pjoin(self.dataset_dir, self.dataset_fname), mat_id, mode='r', load_large_dataset_inference=self.load_large_dataset_inference) for mat_id in self.info.mat_id]
 
         # print(f"Loading existing dataset: {os.path.abspath(self.data.filename)}")
 
@@ -319,7 +321,7 @@ class ManyBodyData(Dataset):
             return None
 
         if self.multiprocessing:
-            with Pool(32) as pool: # It seems 32 or 16 works the best.
+            with Pool(8) as pool: # It seems 32 or 16 works the best.
                 if self.onlySave: # used to handle large dataset
                     list(tqdm(pool.imap(processor_return_None_wrapper, folder_list), total=len(folder_list), desc='Processing WFN data'))
                 else:
@@ -421,7 +423,7 @@ class ManyBodyData(Dataset):
         for mat_id in mat_id_list:
             with h5.File(pjoin(self.dataset_dir, mat_id+dataset_fname), 'r') as f:
                 # This is not a class method, so we don't need further info check
-                self.datapoint_interface_h5(pjoin(self.dataset_dir, dataset_fname), mat_id, f[mat_id], mode='a')
+                self.datapoint_interface_h5(pjoin(self.dataset_dir, dataset_fname), mat_id, f[mat_id], mode='a', )
 
             if not save_original:
                 os.remove(pjoin(self.dataset_dir, mat_id+dataset_fname))
@@ -518,6 +520,7 @@ class ManyBodyData(Dataset):
 
         datapoint = {}
         mat_id = os.path.basename(folder)
+        # print(f'--debug: {mat_id} BSE_processor started')
         info = copy.deepcopy(self.info.__dict__)
         nc_wfn, nv_wfn = info.pop('nc_wfn'), info.pop('nv_wfn')
 
@@ -527,6 +530,8 @@ class ManyBodyData(Dataset):
             wf = wfn(wfn_fname)
             datapoint_src =  wf.get_dataset(nc=nc_wfn, nv=nv_wfn, **info)
             datapoint['src'] = datapoint_src
+
+        # print(f'--debug: {mat_id} WFN dataset created')
 
         # build tgt and label
         if not info.get('predict_only'):
@@ -559,7 +564,8 @@ class ManyBodyData(Dataset):
 
             else:
                 raise NotImplementedError
-
+            
+        # print('--debug: {mat_id} BSE dataset created')
 
         # save data to h5 file
         if not self.multiprocessing:
@@ -573,7 +579,7 @@ class ManyBodyData(Dataset):
         return datapoint
 
     @staticmethod
-    def datapoint_interface_h5(dataset_h5_fname: str, mat_id: str, datapoint=None, mode: str = 'a'):
+    def datapoint_interface_h5(dataset_h5_fname: str, mat_id: str, datapoint=None, mode: str = 'a', load_large_dataset_inference: bool = False):
         """
         Save or load a datapoint to/from an HDF5 file.
         
@@ -634,12 +640,24 @@ class ManyBodyData(Dataset):
                     if isinstance(item, h5.Group):  # If it's a group, recurse
                         data_dict[key] = read_data(item)
                     else:
-                        data_dict[key] = item[()]  # Read dataset
+                        # data_dict[key] = item[()]  # Read dataset
+                        # safe loading for large dataset:
+                        if load_large_dataset_inference:
+                            if key == 'wfn':
+                                data_dict[key] = item # only load its reference, the actual data will be loaded when accessed
+                            else:
+                                data_dict[key] = item[()]
+                        else:
+                                data_dict[key] = item[()]
                 return data_dict
 
-            with h5.File(dataset_h5_fname, 'r') as f:
-                if mat_id in f:
-                    datapoint = read_data(f[mat_id])
+            # with h5.File(dataset_h5_fname, 'r') as f:
+            #     if mat_id in f:
+            #         datapoint = read_data(f[mat_id])
+
+            f = h5.File(dataset_h5_fname, 'r')
+            if mat_id in f:
+                datapoint = read_data(f[mat_id])
 
             return datapoint
 

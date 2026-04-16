@@ -312,16 +312,17 @@ class bse_training_manager_for_deepgwbse_paper:
         self.dataset_dir = dataset_dir
         self.dataset_fname = dataset_fname
         self.dataset_latent_fname = dataset_fname.split('.')[0] + dataset_latent_fname_suffix
+        self.load_large_dataset_inference = kwargs.get('load_large_dataset_inference', False)
 
         if not os.path.exists(os.path.join(self.dataset_dir, self.dataset_latent_fname)):
             print(f"latent dataset not found, creating new one")
             # create latent_dataset
-            self.bsedata = ManyBodyData.from_existing_dataset(os.path.join(self.dataset_dir, self.dataset_fname))
+            self.bsedata = ManyBodyData.from_existing_dataset(os.path.join(self.dataset_dir, self.dataset_fname), load_large_dataset_inference=self.load_large_dataset_inference)
             self.bsedata = eb.create_latent_for_ManyBodyData_h5(self.bsedata, dataset_dir=self.dataset_dir, dataset_fname=self.dataset_latent_fname)
         else:
             print(f"latent dataset found, using {os.path.join(self.dataset_dir, self.dataset_latent_fname)}")
             # directly read the latent_dataset
-            self.bsedata = ManyBodyData.from_existing_dataset(os.path.join(self.dataset_dir, self.dataset_latent_fname), data_slice=data_slice)
+            self.bsedata = ManyBodyData.from_existing_dataset(os.path.join(self.dataset_dir, self.dataset_latent_fname), data_slice=data_slice, load_large_dataset_inference=self.load_large_dataset_inference)
 
         self.bsedata_train = self.bsedata[:int(len(self.bsedata)*train_val_split)]
         self.bsedata_val = self.bsedata[int(len(self.bsedata)*train_val_split):]
@@ -386,6 +387,7 @@ class bse_training_manager_for_deepgwbse_paper:
             plt.ylabel('Predicted')
             plt.title('BSE Training Parity Plot(This is only a test fig!!!)')
             plt.savefig('bse_original_vs_pred.png')
+        return loss/len(dataloader), r2/len(dataloader)
 
 
 if __name__ == "__main__":  

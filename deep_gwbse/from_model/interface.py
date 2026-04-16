@@ -502,7 +502,11 @@ class wfn(BGWIO):
             }
         possible operators:
             'dipole': (nk, nc+nv, nc+nv) dipole matrix elements
+        
         """
+
+        print('debug: get_dataset with nc=%d, nv=%d, cell_slab_truncation=%s, useWignerXY=%s, useWignerXYZ=%s' % (nc, nv, str(cell_slab_truncation), str(useWignerXY), str(useWignerXYZ)))
+
         if operator == 'dipole':
             dipole = self.get_dipole(nc=nc, nv=nv)
             print(f'Dipole matrix shape: {dipole.shape}')
@@ -545,6 +549,7 @@ class wfn(BGWIO):
             logging.debug(f'Average charge after truncation: {np.sum(wfn_r, axis=(2,3,4)).mean():.2f}')
 
         if useWignerXYZ:
+            print('debug: use WignerXYZ')
             assert AngstromPerPixel is not None, 'AngstromPerPixel is required when useWignerXYZ is True'
             self.wigner3d = wigner3d.WignerXYZ(self.lattice, 
                                              self.FFTgrid, 
@@ -556,6 +561,7 @@ class wfn(BGWIO):
             # print('--debug:' ,wfn_r.shape)
 
             for k in range(wfn_r.shape[0]):
+                print('debug: wigner3d interpolation kpt %d/%d' % (k+1, wfn_r.shape[0]))
                 for b in range(wfn_r.shape[1]):
                     wfn_r_wigner3d[k,b] = self.wigner3d.Wigner_fast_nearest(wfn_r[k,b], kwargs.get('max_distance', 0.2))
 

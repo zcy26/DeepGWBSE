@@ -103,6 +103,7 @@ class ManyBodyData_WFN_Embedder_pretrained:
 
     def _embed_src(self, data):
         """Helper function to embed source wavefunction."""
+        # print('debug: data', data)
         data['src']['latent'] = self.latent_embedder.embed(data['src']['wfn'])
         if self.del_wfn_original:
             data['src'].pop('wfn', None)
@@ -220,6 +221,9 @@ class SimpleSumXYEmbedder(LatentEmbedderBASE):
         input: wfn_data, see LateEmbedderBASE
         return: latent, see LateEmbedderBASE
         """
+        if not isinstance(wfn_data, np.ndarray):
+            wfn_data = wfn_data[()] # load from h5py dataset reference if it's not already loaded as np.ndarray (to fix memory issue)
+
         wfn_data = np.copy(wfn_data) # don't change the original data
         assert len(wfn_data.shape) == 5, f"len(wfn_data.shape): {len(wfn_data.shape)}"
         nk, nc_nv, nx, ny, nz = wfn_data.shape
@@ -259,6 +263,10 @@ class E2VAEEmbedder(LatentEmbedderBASE):
 
     @torch.no_grad()
     def embed(self, wfn_data: np.ndarray) -> np.ndarray:
+
+        if not isinstance(wfn_data, np.ndarray):
+            wfn_data = wfn_data[()] # load from h5py dataset reference if it's not already loaded as np.ndarray (to fix memory issue)
+
         nk, nb, X, Y, C = wfn_data.shape
         batch = [{'wfn':wfn_data}] # since wfn_collate_fn only support batch size 1
         wfn_data, mask = wfn_collate_fn(batch)
@@ -297,6 +305,10 @@ class E3VAEEmbedder(LatentEmbedderBASE):
     
     @torch.no_grad()
     def embed(self, wfn_data: np.ndarray) -> np.ndarray:
+    
+        if not isinstance(wfn_data, np.ndarray):
+            wfn_data = wfn_data[()] # load from h5py dataset reference if it's not already loaded as np.ndarray (to fix memory issue)
+
         nk, nb, X, Y, Z = wfn_data.shape
         batch = [{'wfn':wfn_data}] # since wfn_collate_fn only support batch size 1
         wfn_data, mask = wfn_3d_wigner_collate_fn(batch)
